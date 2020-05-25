@@ -236,6 +236,7 @@ ufw --force enable
 echo "[Unit]" > /etc/systemd/system/openvas.service
 echo "Description=Control the OpenVAS service" >> /etc/systemd/system/openvas.service
 echo "After=redis.service" >> /etc/systemd/system/openvas.service
+echo "After=redis-server@openvas.service" >> /etc/systemd/system/openvas.service
 echo "After=postgresql.service" >> /etc/systemd/system/openvas.service
 echo -e "\n" >> /etc/systemd/system/openvas.service
 echo "[Service]" >> /etc/systemd/system/openvas.service
