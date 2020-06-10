@@ -155,6 +155,8 @@ sudo -Hiu gvm echo "echo Sleeping 5 minutes" | sudo -Hiu gvm tee -a /opt/gvm/.ba
 sudo -Hiu gvm echo "echo More info can be found by searching greenbone-nvt-sync rsync connection refused on Google" | sudo -Hiu gvm tee -a /opt/gvm/.bashrc
 sudo -Hiu gvm echo "sleep 300" | sudo -Hiu gvm tee -a /opt/gvm/.bashrc # allow a NAT connection to close
 sudo -Hiu gvm echo "greenbone-certdata-sync" | sudo -Hiu gvm tee -a /opt/gvm/.bashrc
+# Add sleep to future greenbone-certdata-sync calls (https://github.com/yu210148/gvm_install/issues/2 --Thanks kirk56k)
+sudo -Hiu gvm echo "sed -i '349isleep 300' /opt/gvm/sbin/greenbone-certdata-sync" | sudo -Hiu gvm tee -a /opt/gvm/.bashrc
 
 # Set cron jobs to run once daily at random times
 HOUR=$(shuf -i 0-23 -n 1)
