@@ -244,6 +244,7 @@ echo "After=redis.service" >> /etc/systemd/system/openvas.service
 echo "After=postgresql.service" >> /etc/systemd/system/openvas.service
 echo -e "\n" >> /etc/systemd/system/openvas.service
 echo "[Service]" >> /etc/systemd/system/openvas.service
+echo "ExecStartPre=-rm /opt/gvm/var/run/ospd-openvas.pid /opt/gvm/var/run/ospd.sock /opt/gvm/var/run/gvmd.sock" >> /etc/systemd/system/openvas.service
 echo "Type=simple" >> /etc/systemd/system/openvas.service
 echo "User=gvm" >> /etc/systemd/system/openvas.service
 echo "Group=gvm" >> /etc/systemd/system/openvas.service
