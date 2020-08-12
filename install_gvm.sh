@@ -272,6 +272,16 @@ echo -e "\n" >> /etc/systemd/system/gvm.service
 echo "[Install]" >> /etc/systemd/system/gvm.service
 echo "WantedBy=multi-user.target" >> /etc/systemd/system/gvm.service
 
+echo "[Unit]" > /etc/systemd/system/gvm.path
+echo "Description=Start the OpenVAS GVM service when opsd.sock is available" >> /etc/systemd/system/gvm.path
+echo -e "\n" >> /etc/systemd/system/gvm.path
+echo "[Path]" >> /etc/systemd/system/gvm.path
+echo "PathChanged=/opt/gvm/var/run/ospd.sock" >> /etc/systemd/system/gvm.path
+echo "Unit=gvm.service" >> /etc/systemd/system/gvm.path
+echo -e "\n" >> /etc/systemd/system/gvm.path
+echo "[Install]" >> /etc/systemd/system/gvm.path
+echo "WantedBy=multi-user.target" >> /etc/systemd/system/gvm.path
+
 echo "[Unit]" > /etc/systemd/system/gsa.service
 echo "Description=Control the OpenVAS GSA service" >> /etc/systemd/system/gsa.service
 echo "After=openvas.service" >> /etc/systemd/system/gsa.service
@@ -288,10 +298,21 @@ echo -e "\n" >> /etc/systemd/system/gsa.service
 echo "[Install]" >> /etc/systemd/system/gsa.service
 echo "WantedBy=multi-user.target" >> /etc/systemd/system/gsa.service
 
+echo "[Unit]" > /etc/systemd/system/gsa.path
+echo "Description=Start the OpenVAS GSA service when gvmd.sock is available" >> /etc/systemd/system/gsa.path
+echo -e "\n" >> /etc/systemd/system/gsa.path
+echo "[Path]" >> /etc/systemd/system/gsa.path
+echo "PathChanged=/opt/gvm/var/run/gvmd.sock" >> /etc/systemd/system/gsa.path
+echo "Unit=gsa.service" >> /etc/systemd/system/gsa.path
+echo -e "\n" >> /etc/systemd/system/gsa.path
+echo "[Install]" >> /etc/systemd/system/gsa.path
+echo "WantedBy=multi-user.target" >> /etc/systemd/system/gsa.path
+
+
 systemctl daemon-reload
 systemctl enable --now openvas
-systemctl enable --now gvm
-systemctl enable --now gsa 
+systemctl enable --now gvm.{path,service}
+systemctl enable --now gsa.{path,service}
 
 
 # REMIND USER TO CHANGE DEFAULT PASSWORD
