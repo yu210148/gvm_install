@@ -10,8 +10,8 @@ chmod +x install_gvm.sh
 sudo ./install_gvm.sh 
 ```
 
-Based on koromicha's excellent guide, and thanks to the commenters there as well:
-https://kifarunix.com/install-and-setup-gvm-11-on-ubuntu-20-04/
+Based on [koromicha's excellent guide](https://kifarunix.com/install-and-setup-gvm-11-on-ubuntu-20-04/). Thanks to the commenters there as well:
+
 
 Takes a while to do everything (a couple of hours on my last test).
 
