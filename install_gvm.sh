@@ -316,6 +316,7 @@ systemctl enable --now gsa.{path,service}
 
 
 # REMIND USER TO CHANGE DEFAULT PASSWORD
+echo "The installation is done, but there still may be an update in progress. Please be patient when you can't login!"
 echo "Username is gvmadmin and pasword is StrongPass"
 echo "Remember to change this default password"
 echo "sudo -Hiu gvm gvmd --user=gvmadmin --new-password=<PASSWORD>"
