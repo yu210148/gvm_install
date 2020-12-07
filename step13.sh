@@ -1,9 +1,9 @@
 #!/bin/bash
 
 # step 13
+# Build and Install OSPd and OSPd-OpenVAS
 su gvm -c "touch /opt/gvm/ospd.sh"
 su gvm -c "chmod u+x /opt/gvm/ospd.sh"
-# Build and Install OSPd and OSPd-OpenVAS
 
 sudo -Hiu gvm echo "export PKG_CONFIG_PATH=/opt/gvm/lib/pkgconfig:$PKG_CONFIG_PATH" | sudo -Hiu gvm tee -a /opt/gvm/ospd.sh
 
