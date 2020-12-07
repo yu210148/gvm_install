@@ -302,13 +302,14 @@ sudo -Hiu gvm echo -e "UUID=\$(gvmd --get-scanners | grep Created | awk '{print 
 sudo -Hiu gvm echo "sleep 10" | sudo -Hiu gvm tee -a /opt/gvm/scan.sh
 sudo -Hiu gvm echo -e "/opt/gvm/sbin/gvmd --verify-scanner=UUID" | sed 's/UUID/\$UUID/g' | sudo -Hiu gvm tee -a /opt/gvm/scan.sh
 
+# Create OpenVAS (GVM 11) Admin
+sudo -Hiu gvm echo -e "/opt/gvm/sbin/gvmd --create-user gvmadmin --password=StrongPass" | sudo -Hiu gvm tee -a /opt/gvm/scan.sh
+
 su gvm -c "/opt/gvm/scan.sh"
 su gvm -c "rm /opt/gvm/scan.sh"
 
 
 #step 16 below
-# Create OpenVAS (GVM 11) Admin
-sudo -Hiu gvm echo -e "gvmd --create-user gvmadmin --password=StrongPass" | sudo -Hiu gvm tee -a /opt/gvm/.bashrc
 
 # Leave gvm environment and clean up
 sudo -Hiu gvm echo "exit" | sudo -Hiu gvm tee -a /opt/gvm/.bashrc
