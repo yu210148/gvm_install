@@ -312,12 +312,12 @@ su gvm -c "rm /opt/gvm/scan.sh"
 #step 16 below
 
 # Leave gvm environment and clean up
-sudo -Hiu gvm echo "exit" | sudo -Hiu gvm tee -a /opt/gvm/.bashrc
-su gvm
+#sudo -Hiu gvm echo "exit" | sudo -Hiu gvm tee -a /opt/gvm/.bashrc
+#su gvm
 # Debugging
 #sudo -Hiu gvm mv /opt/gvm/.bashrc /opt/gvm/just-ran-bashrc.txt
-sudo -Hiu gvm rm /opt/gvm/.bashrc
-sudo -Hiu gvm mv /opt/gvm/.bashrc.bak /opt/gvm/.bashrc
+#sudo -Hiu gvm rm /opt/gvm/.bashrc
+#sudo -Hiu gvm mv /opt/gvm/.bashrc.bak /opt/gvm/.bashrc
 
 # Set firewall to allow access on port 443 and 22
 ufw allow 443
