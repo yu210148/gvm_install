@@ -117,7 +117,7 @@ if [ $ID = "debian" ]; then
     # to adjust the chmod command below.
     # more info at https://unix.stackexchange.com/questions/38538/bash-dev-stderr-permission-denied
     usermod -aG tty gvm
-    chmod g+rw /dev/pts/2
+    #chmod g+rw /dev/pts/2 # This doesn't work consistantely 
 else
     sed 's/Defaults\s.*secure_path=\"\/usr\/local\/sbin:\/usr\/local\/bin:\/usr\/sbin:\/usr\/bin:\/sbin:\/bin:\/snap\/bin\"/Defaults secure_path=\"\/usr\/local\/sbin:\/usr\/local\/bin:\/usr\/sbin:\/usr\/bin:\/sbin:\/bin:\/snap\/bin:\/opt\/gvm\/sbin:\/opt\/gvm\/bin"/g' /etc/sudoers | EDITOR='tee' visudo
 fi
@@ -205,8 +205,6 @@ sudo -Hiu gvm echo "sed -i '349isleep 300' /opt/gvm/sbin/greenbone-certdata-sync
 su gvm -c "/opt/gvm/feed.sh"
 su gvm -c "rm /opt/gvm/feed.sh"
 
-# Step 12 is below
-
 # Update GVM CERT and SCAP data from the feed servers
 su gvm -c "touch /opt/gvm/cron.sh"
 su gvm -c "chmod u+x /opt/gvm/cron.sh"
@@ -261,6 +259,7 @@ sudo -Hiu gvm echo "python3 setup.py install --prefix=/opt/gvm" | sudo -Hiu gvm 
 su gvm -c "/opt/gvm/ospd.sh"
 su gvm -c "rm /opt/gvm/ospd.sh"
 
+# I think we're good up until here and that it's in the steps below that things start to go sideways.
 
 # Start OpenVAS Scanner, GSA and GVM services
 # Start OpenVAS
