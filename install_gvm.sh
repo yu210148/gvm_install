@@ -229,7 +229,7 @@ MINUTE=$(shuf -i 0-59 -n 1)
 sudo -Hiu gvm echo "(crontab -l 2>/dev/null; echo \"${MINUTE} ${HOUR} * * * /usr/bin/sudo /opt/gvm/sbin/openvas --update-vt-info\") | crontab -" | sudo -Hiu gvm tee -a /opt/gvm/cron.sh
 
 # Configure certs
-sudo -Hiu gvm echo "gvm-manage-certs -a" | sudo -Hiu gvm tee -a /opt/gvm/cron.sh
+sudo -Hiu gvm echo "/opt/gvm/bin/gvm-manage-certs -a" | sudo -Hiu gvm tee -a /opt/gvm/cron.sh
 
 su gvm -c "/opt/gvm/cron.sh"
 su gvm -c "rm /opt/gvm/cron.sh"
@@ -307,6 +307,9 @@ sudo -Hiu gvm echo -e "/opt/gvm/sbin/gvmd --create-user gvmadmin --password=Stro
 su gvm -c "/opt/gvm/scan.sh"
 su gvm -c "rm /opt/gvm/scan.sh"
 
+# seems that /opt/gvm/bin and /opt/gvm/sbin aren't in user gvm's PATH so instead of having
+# all the full paths above you could put "export PATH=$PATH:/opt/gvm/bin:/opt/gvm/sbin" at 
+# the start of the above scripts. Not sure which is a better solution.
 
 #step 16 below
 

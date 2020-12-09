@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# step 16
+#back as root user now
 
 # Set firewall to allow access on port 443 and 22
 ufw allow 443
