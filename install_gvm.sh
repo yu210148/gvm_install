@@ -107,7 +107,7 @@ echo "gvm ALL = NOPASSWD: /opt/gvm/sbin/openvas" > /etc/sudoers.d/gvm
 # This next line varies between Debian and Ubuntu because it includes /snap/bin on Ubuntu                                                                                                    
 ID=`grep ^ID /etc/os-release | sed 's/ID=//g'`
 
-if [ $ID = "debian" ]; then
+if [ $ID = "debian" ] || [$ID = "kali"]; then
     sed 's/Defaults\s.*secure_path=\"\/usr\/local\/sbin:\/usr\/local\/bin:\/usr\/sbin:\/usr\/bin:\/sbin:\/bin"/Defaults secure_path=\"\/usr\/local\/sbin:\/usr\/local\/bin:\/usr\/sbin:\/usr\/bin:\/sbin:\/bin:\/opt\/gvm\/sbin\:\/opt\/gvm\/bin"/g' /etc/sudoers | EDITOR='tee' visudo
     
     # when adapting this script for Debian I found that there's an issue later on when the gvm user
@@ -179,7 +179,7 @@ sudo -Hiu gvm echo "mkdir build" | sudo -Hiu gvm tee -a /opt/gvm/gsa_build.sh
 sudo -Hiu gvm echo "cd build" | sudo -Hiu gvm tee -a /opt/gvm/gsa_build.sh
 # if debian { cmake .. -DCMAKE_INSTALL_PREFIX=/opt/gvm -DCMAKE_BUILD_TYPE=RELEASE }
 ID=`grep ^ID /etc/os-release | sed 's/ID=//g'`
-if [ $ID = "debian" ]; then
+if [ $ID = "debian" ] || [$ID = "kali"]; then
     sudo -Hiu gvm echo "cmake .. -DCMAKE_INSTALL_PREFIX=/opt/gvm -DCMAKE_BUILD_TYPE=RELEASE" | sudo -Hiu gvm tee -a /opt/gvm/gsa_build
 else
     sudo -Hiu gvm echo "cmake .. -DCMAKE_INSTALL_PREFIX=/opt/gvm" | sudo -Hiu gvm tee -a /opt/gvm/gsa_build.sh
@@ -250,7 +250,7 @@ sudo -Hiu gvm echo "export PKG_CONFIG_PATH=/opt/gvm/lib/pkgconfig:$PKG_CONFIG_PA
 # another difference here between Ubuntu and Debian
 # Debian needs the below to be 'python3.7' while Ubuntu 'python3.8'
 ID=`grep ^ID /etc/os-release | sed 's/ID=//g'`
-if [ $ID = "debian" ]; then
+if [ $ID = "debian" ] || [$ID = "kali"]; then
     sudo -Hiu gvm echo "mkdir -p /opt/gvm/lib/python3.7/site-packages/" | sudo -Hiu gvm tee -a /opt/gvm/ospd.sh
     sudo -Hiu gvm echo "export PYTHONPATH=/opt/gvm/lib/python3.7/site-packages" | sudo -Hiu gvm tee -a /opt/gvm/ospd.sh
 else
@@ -273,7 +273,7 @@ su gvm -c "touch /opt/gvm/start.sh"
 su gvm -c "chmod u+x /opt/gvm/start.sh"
 
 ID=`grep ^ID /etc/os-release | sed 's/ID=//g'`
-if [ $ID = "debian" ]; then
+if [ $ID = "debian" ] || [$ID = "kali"]; then
     sudo -Hiu gvm echo "export PYTHONPATH=/opt/gvm/lib/python3.7/site-packages" | sudo -Hiu gvm tee -a /opt/gvm/start.sh
 else
     sudo -Hiu gvm echo "export PYTHONPATH=/opt/gvm/lib/python3.8/site-packages" | sudo -Hiu gvm tee -a /opt/gvm/start.sh
