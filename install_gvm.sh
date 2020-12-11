@@ -32,6 +32,13 @@ sudo -Hiu postgres psql -c 'grant dba to gvm;' gvmd
 sudo -Hiu postgres psql -c 'create extension "uuid-ossp";' gvmd
 systemctl restart postgresql
 systemctl enable postgresql
+
+# Kali Linux uses postgresql 13 which cmake doesn't know about as of version 3.18 so it get's added here
+ID=`grep ^ID /etc/os-release | sed 's/ID=//g'`
+if [ $ID = "debian" ] || [$ID = "kali"]; then
+    sed -i 's/"12" "11" "10"/"13" "12" "11" "10"/g' /usr/share/cmake-3.18/Modules/FindPostgreSQL.cmake
+fi
+
 sed -i 's/\"$/\:\/opt\/gvm\/bin\:\/opt\/gvm\/sbin\:\/opt\/gvm\/\.local\/bin\"/g' /etc/environment
 echo "/opt/gvm/lib" > /etc/ld.so.conf.d/gvm.conf
 sudo -Hiu gvm mkdir /tmp/gvm-source
@@ -106,7 +113,6 @@ systemctl enable redis-server@openvas
 echo "gvm ALL = NOPASSWD: /opt/gvm/sbin/openvas" > /etc/sudoers.d/gvm
 # This next line varies between Debian and Ubuntu because it includes /snap/bin on Ubuntu                                                                                                    
 ID=`grep ^ID /etc/os-release | sed 's/ID=//g'`
-
 if [ $ID = "debian" ] || [$ID = "kali"]; then
     sed 's/Defaults\s.*secure_path=\"\/usr\/local\/sbin:\/usr\/local\/bin:\/usr\/sbin:\/usr\/bin:\/sbin:\/bin"/Defaults secure_path=\"\/usr\/local\/sbin:\/usr\/local\/bin:\/usr\/sbin:\/usr\/bin:\/sbin:\/bin:\/opt\/gvm\/sbin\:\/opt\/gvm\/bin"/g' /etc/sudoers | EDITOR='tee' visudo
     
