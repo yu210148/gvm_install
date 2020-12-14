@@ -17,7 +17,7 @@ fi
 sudo -Hiu gvm echo "#make" | sudo -Hiu gvm tee -a /opt/gvm/gsa_build.sh
 sudo -Hiu gvm echo "#make install" | sudo -Hiu gvm tee -a /opt/gvm/gsa_build.sh
 
-sudo -Hiu gvm echo "echo $PWD" | sudo -Hiu gvm tee -a /opt/gvm/gsa_build.sh
+#sudo -Hiu gvm echo "echo $PWD" | sudo -Hiu gvm tee -a /opt/gvm/gsa_build.sh
 
 #su gvm -c "/opt/gvm/gsa_build.sh"
 #su gvm -c "rm /opt/gvm/gsa_build.sh"
