@@ -8,9 +8,12 @@ sudo -Hiu gvm echo "export PKG_CONFIG_PATH=/opt/gvm/lib/pkgconfig:$PKG_CONFIG_PA
 # another difference here between Ubuntu and Debian
 # Debian needs the below to be 'python3.7' while Ubuntu 'python3.8'
 ID=`grep ^ID= /etc/os-release | sed 's/ID=//g'`
-if [[ $ID = "debian" ]] || [[ $ID = "kali" ]]; then
+if [[ $ID = "debian" ]]; then
     sudo -Hiu gvm echo "mkdir -p /opt/gvm/lib/python3.7/site-packages/" | sudo -Hiu gvm tee -a /opt/gvm/ospd.sh
     sudo -Hiu gvm echo "export PYTHONPATH=/opt/gvm/lib/python3.7/site-packages" | sudo -Hiu gvm tee -a /opt/gvm/ospd.sh
+else if [[ $ID = "kali" ]]; then
+    sudo -Hiu gvm echo "mkdir -p /opt/gvm/lib/python3.9/site-packages/" | sudo -Hiu gvm tee -a /opt/gvm/ospd.sh
+    sudo -Hiu gvm echo "export PYTHONPATH=/opt/gvm/lib/python3.9/site-packages" | sudo -Hiu gvm tee -a /opt/gvm/ospd.sh
 else
     sudo -Hiu gvm echo "mkdir -p /opt/gvm/lib/python3.8/site-packages/" | sudo -Hiu gvm tee -a /opt/gvm/ospd.sh
     sudo -Hiu gvm echo "export PYTHONPATH=/opt/gvm/lib/python3.8/site-packages" | sudo -Hiu gvm tee -a /opt/gvm/ospd.sh
