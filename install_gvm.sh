@@ -193,6 +193,8 @@ sudo -Hiu gvm echo "make install" | sudo -Hiu gvm tee -a /opt/gvm/gvm_build.sh
 su gvm -c "/opt/gvm/gvm_build.sh"
 su gvm -c "rm /opt/gvm/gvm_build.sh"
 
+# step 7 below
+
 # Build and Install Greenbone Secuirty Assistant
 su gvm -c "touch /opt/gvm/gsa_build.sh"
 su gvm -c "chmod u+x /opt/gvm/gsa_build.sh"
@@ -213,6 +215,8 @@ sudo -Hiu gvm echo "make install" | sudo -Hiu gvm tee -a /opt/gvm/gsa_build.sh
 
 su gvm -c "/opt/gvm/gsa_build.sh"
 su gvm -c "rm /opt/gvm/gsa_build.sh"
+
+# step 8 below
 
 # Update GVM CERT and SCAP data from the feed servers
 su gvm -c "touch /opt/gvm/feed.sh"

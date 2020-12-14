@@ -1,26 +1,21 @@
 #!/bin/bash
+# Build and Install Greenbone Secuirty Assistant
+su gvm -c "touch /opt/gvm/gsa_build.sh"
+su gvm -c "chmod u+x /opt/gvm/gsa_build.sh"
 
-usermod -aG tty gvm
-chmod g+rw /dev/pts/2
+sudo -Hiu gvm echo "export PKG_CONFIG_PATH=/opt/gvm/lib/pkgconfig:$PKG_CONFIG_PATH" | sudo -Hiu gvm tee -a /opt/gvm/gsa_build.sh
+sudo -Hiu gvm echo "cd /tmp/gvm-source/gsa" | sudo -Hiu gvm tee -a /opt/gvm/gsa_build.sh
+sudo -Hiu gvm echo "mkdir build" | sudo -Hiu gvm tee -a /opt/gvm/gsa_build.sh
+sudo -Hiu gvm echo "cd build" | sudo -Hiu gvm tee -a /opt/gvm/gsa_build.sh
+# if debian { cmake .. -DCMAKE_INSTALL_PREFIX=/opt/gvm -DCMAKE_BUILD_TYPE=RELEASE }
+ID=`grep ^ID= /etc/os-release | sed 's/ID=//g'`
+if [[ $ID = "debian" ]] || [[ $ID = "kali" ]]; then
+    sudo -Hiu gvm echo "cmake .. -DCMAKE_INSTALL_PREFIX=/opt/gvm -DCMAKE_BUILD_TYPE=RELEASE" | sudo -Hiu gvm tee -a /opt/gvm/gsa_build
+else
+    sudo -Hiu gvm echo "cmake .. -DCMAKE_INSTALL_PREFIX=/opt/gvm" | sudo -Hiu gvm tee -a /opt/gvm/gsa_build.sh
+fi
+sudo -Hiu gvm echo "make" | sudo -Hiu gvm tee -a /opt/gvm/gsa_build.sh
+sudo -Hiu gvm echo "make install" | sudo -Hiu gvm tee -a /opt/gvm/gsa_build.sh
 
-# preamble
-sudo -Hiu gvm touch /opt/gvm/.bashrc
-sudo -Hiu gvm mv /opt/gvm/.bashrc /opt/gvm/.bashrc.bak # save original bashrc file 
-sudo -Hiu gvm touch /opt/gvm/.bashrc
-
-# steps to be taken go here
-
-# may need to change the permissions on the target of 
-# /dev/stderr (and others?) as root before running this
-# and add the gvm user to the tty group
-#root@debian-gvm:~# usermod -aG tty gvm
-#root@debian-gvm:~# chmod g+rw /dev/pts/2
-
-sudo -Hiu gvm echo "greenbone-nvt-sync" | sudo -Hiu gvm tee -a /opt/gvm/.bashrc
-# when done clean up with the code below
-
-# Leave gvm environment and clean up
-sudo -Hiu gvm echo "exit" | sudo -Hiu gvm tee -a /opt/gvm/.bashrc
-su gvm
-sudo -Hiu gvm rm /opt/gvm/.bashrc
-sudo -Hiu gvm mv /opt/gvm/.bashrc.bak /opt/gvm/.bashrc
+su gvm -c "/opt/gvm/gsa_build.sh"
+su gvm -c "rm /opt/gvm/gsa_build.sh"
