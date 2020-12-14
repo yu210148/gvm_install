@@ -171,7 +171,7 @@ sudo -Hiu gvm touch /opt/gvm/.bashrc
 
 # trying this a different way here TODO: might need to refactor the rest to use this method. Trouble is that the export PKG_CONFIG_PATH doesn't persist though.
 su gvm -c "sed -i '364isleep 300' /opt/gvm/bin/greenbone-nvt-sync"
-su gvm -c "sed -i '364iecho 'Sleeping for 5 minutes' /opt/gvm/bin/greenbone-nvt-sync"
+su gvm -c "sed -i '364iecho Sleeping for 5 minutes' /opt/gvm/bin/greenbone-nvt-sync"
 su gvm -c 'echo "More info can be found by searching greenbone-nvt-sync rsync connection refused on Google"'
 su gvm -c /opt/gvm/bin/greenbone-nvt-sync
 /opt/gvm/sbin/openvas --update-vt-info
