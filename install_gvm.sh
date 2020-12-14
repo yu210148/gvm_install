@@ -239,11 +239,12 @@ sudo -Hiu gvm echo "sed -i '349isleep 300' /opt/gvm/sbin/greenbone-certdata-sync
 su gvm -c "/opt/gvm/feed.sh"
 su gvm -c "rm /opt/gvm/feed.sh"
 
-# Update GVM CERT and SCAP data from the feed servers
+# step 9 below
+
+# Set cron jobs to run once daily at random times
 su gvm -c "touch /opt/gvm/cron.sh"
 su gvm -c "chmod u+x /opt/gvm/cron.sh"
 
-# Set cron jobs to run once daily at random times
 HOUR=$(shuf -i 0-23 -n 1)
 MINUTE=$(shuf -i 0-59 -n 1)
 sudo -Hiu gvm echo "(crontab -l 2>/dev/null; echo \"${MINUTE} ${HOUR} * * * /opt/gvm/sbin/greenbone-scapdata-sync\") | crontab -" | sudo -Hiu gvm tee -a /opt/gvm/cron.sh

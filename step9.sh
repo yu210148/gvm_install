@@ -1,27 +1,28 @@
 #!/bin/bash
+# Set cron jobs to run once daily at random times
+su gvm -c "touch /opt/gvm/cron.sh"
+su gvm -c "chmod u+x /opt/gvm/cron.sh"
 
-# Start OpenVAS Scanner, GSA and GVM services
-# Start OpenVAS
-su gvm -c "touch /opt/gvm/start.sh"
-su gvm -c "chmod u+x /opt/gvm/start.sh"
+HOUR=$(shuf -i 0-23 -n 1)
+MINUTE=$(shuf -i 0-59 -n 1)
+sudo -Hiu gvm echo "(crontab -l 2>/dev/null; echo \"${MINUTE} ${HOUR} * * * /opt/gvm/sbin/greenbone-scapdata-sync\") | crontab -" | sudo -Hiu gvm tee -a /opt/gvm/cron.sh
 
-ID=`grep ^ID /etc/os-release | sed 's/ID=//g'`
-if [ $ID = "debian" ]; then
-    sudo -Hiu gvm echo "export PYTHONPATH=/opt/gvm/lib/python3.7/site-packages" | sudo -Hiu gvm tee -a /opt/gvm/start.sh
-else
-    sudo -Hiu gvm echo "export PYTHONPATH=/opt/gvm/lib/python3.8/site-packages" | sudo -Hiu gvm tee -a /opt/gvm/start.sh
-fi
-sudo -Hiu gvm echo "/usr/bin/python3 /opt/gvm/bin/ospd-openvas --pid-file /opt/gvm/var/run/ospd-openvas.pid --log-file /opt/gvm/var/log/gvm/ospd-openvas.log --lock-file-dir /opt/gvm/var/run -u /opt/gvm/var/run/ospd.sock" | sudo -Hiu gvm tee -a /opt/gvm/start.sh
-# Start GVM
-sudo -Hiu gvm echo "/opt/gvm/sbin/gvmd --osp-vt-update=/opt/gvm/var/run/ospd.sock" | sudo -Hiu gvm tee -a /opt/gvm/start.sh
-# Start GSA
-sudo -Hiu gvm echo "sudo /opt/gvm/sbin/gsad" | sudo -Hiu gvm tee -a /opt/gvm/start.sh
+HOUR=$(shuf -i 0-23 -n 1)
+MINUTE=$(shuf -i 0-59 -n 1)
+sudo -Hiu gvm echo "(crontab -l 2>/dev/null; echo \"${MINUTE} ${HOUR} * * * /opt/gvm/bin/greenbone-nvt-sync\") | crontab -" | sudo -Hiu gvm tee -a /opt/gvm/cron.sh
 
-# Check the status
-#sudo -Hiu gvm echo "ps aux | grep -E \"ospd-openvas|gsad|gvmd\" | grep -v grep" | sudo -Hiu gvm tee -a /opt/gvm/.bashrc
+HOUR=$(shuf -i 0-23 -n 1)
+MINUTE=$(shuf -i 0-59 -n 1)
+sudo -Hiu gvm echo "(crontab -l 2>/dev/null; echo \"${MINUTE} ${HOUR} * * * /opt/gvm/sbin/greenbone-certdata-sync\") | crontab -" | sudo -Hiu gvm tee -a /opt/gvm/cron.sh
 
-# Wait a moment for the above to start up
-sudo -Hiu gvm echo "sleep 10" | sudo -Hiu gvm tee -a /opt/gvm/start.sh
+# I know this is kludgy as this should be run after the nvt sync but if it gets 
+# run once a day that should do
+HOUR=$(shuf -i 0-23 -n 1)
+MINUTE=$(shuf -i 0-59 -n 1)
+sudo -Hiu gvm echo "(crontab -l 2>/dev/null; echo \"${MINUTE} ${HOUR} * * * /usr/bin/sudo /opt/gvm/sbin/openvas --update-vt-info\") | crontab -" | sudo -Hiu gvm tee -a /opt/gvm/cron.sh
 
-su gvm -c "/opt/gvm/start.sh"
-su gvm -c "rm /opt/gvm/start.sh"
+# Configure certs
+sudo -Hiu gvm echo "/opt/gvm/bin/gvm-manage-certs -a" | sudo -Hiu gvm tee -a /opt/gvm/cron.sh
+
+su gvm -c "/opt/gvm/cron.sh"
+su gvm -c "rm /opt/gvm/cron.sh"
