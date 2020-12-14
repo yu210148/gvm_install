@@ -57,6 +57,7 @@ sudo -Hiu gvm cp --recursive /opt/gvm/* /tmp/gvm-source/
 if [ $ID = "debian" ] || [$ID = "kali"]; then
     touch /opt/gvm/.hushlogin
     chown gvm:gvm /opt/gvm/.hushlogin
+    touch /root/.hushlogin
 fi
 
 sudo -Hiu gvm touch /opt/gvm/.bashrc
