@@ -34,6 +34,7 @@ systemctl restart postgresql
 systemctl enable postgresql
 
 # Kali Linux uses postgresql 13 which cmake doesn't know about as of version 3.18 so it get's added here
+# should have no effect on Debian stable as the line starts with "11" rather than "12" so it won't be matched
 ID=`grep ^ID /etc/os-release | sed 's/ID=//g'`
 if [ $ID = "debian" ] || [$ID = "kali"]; then
     sed -i 's/"12" "11" "10"/"13" "12" "11" "10"/g' /usr/share/cmake-3.18/Modules/FindPostgreSQL.cmake
