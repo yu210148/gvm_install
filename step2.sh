@@ -2,7 +2,7 @@
 
 systemctl restart postgresql
 ID=`grep ^ID= /etc/os-release | sed 's/ID=//g'`
-if [ $ID = "debian" || $ID = "kali"]; then
+if [[ $ID = "debian" ]] || [[ $ID = "kali" ]]; then
     sudo -Hiu postgres touch ~/.hushlogin
 fi
 sudo -Hiu postgres createuser gvm
