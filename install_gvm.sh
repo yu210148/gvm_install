@@ -33,6 +33,8 @@ sudo -Hiu postgres psql -c 'create extension "uuid-ossp";' gvmd
 systemctl restart postgresql
 systemctl enable postgresql
 
+# step 1 above 2 below
+
 # Kali Linux uses postgresql 13 which cmake doesn't know about as of version 3.18 so it get's added here
 # should have no effect on Debian stable as the line starts with "11" rather than "12" so it won't be matched
 ID=`grep ^ID /etc/os-release | sed 's/ID=//g'`
