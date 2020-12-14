@@ -25,6 +25,7 @@ echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.lis
 apt-get update
 apt-get -y install yarn
 apt-get -y install postgresql postgresql-contrib postgresql-server-dev-all
+systemctl restart postgresql
 sudo -Hiu postgres createuser gvm
 sudo -Hiu postgres createdb -O gvm gvmd
 sudo -Hiu postgres psql -c 'create role dba with superuser noinherit;' gvmd
