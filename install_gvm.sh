@@ -52,6 +52,13 @@ sudo -Hiu gvm git clone -b ospd-openvas-1.0 https://github.com/greenbone/ospd-op
 sudo -Hiu gvm git clone -b gvmd-9.0 https://github.com/greenbone/gvmd.git
 sudo -Hiu gvm git clone -b gsa-9.0 https://github.com/greenbone/gsa.git
 sudo -Hiu gvm cp --recursive /opt/gvm/* /tmp/gvm-source/
+
+# Kali linux 2020.4 puts a message about python2 in that's causing problems below. This should workaround.
+if [ $ID = "debian" ] || [$ID = "kali"]; then
+    touch /opt/gvm/.hushlogin
+    chown gvm:gvm /opt/gvm/.hushlogin
+fi
+
 sudo -Hiu gvm touch /opt/gvm/.bashrc
 sudo -Hiu gvm mv /opt/gvm/.bashrc /opt/gvm/.bashrc.bak # save original bashrc file 
 sudo -Hiu gvm touch /opt/gvm/.bashrc
