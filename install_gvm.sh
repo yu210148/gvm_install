@@ -98,6 +98,8 @@ su gvm
 sudo -Hiu gvm rm /opt/gvm/.bashrc
 sudo -Hiu gvm mv /opt/gvm/.bashrc.bak /opt/gvm/.bashrc
 
+#step 4 below
+
 # Configuring OpenVAS
 ldconfig
 cp /tmp/gvm-source/openvas/config/redis-openvas.conf /etc/redis/
