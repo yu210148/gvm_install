@@ -11,7 +11,7 @@ ID=`grep ^ID= /etc/os-release | sed 's/ID=//g'`
 if [[ $ID = "debian" ]]; then
     sudo -Hiu gvm echo "mkdir -p /opt/gvm/lib/python3.7/site-packages/" | sudo -Hiu gvm tee -a /opt/gvm/ospd.sh
     sudo -Hiu gvm echo "export PYTHONPATH=/opt/gvm/lib/python3.7/site-packages" | sudo -Hiu gvm tee -a /opt/gvm/ospd.sh
-else if [[ $ID = "kali" ]]; then
+elif [[ $ID = "kali" ]]; then
     sudo -Hiu gvm echo "mkdir -p /opt/gvm/lib/python3.9/site-packages/" | sudo -Hiu gvm tee -a /opt/gvm/ospd.sh
     sudo -Hiu gvm echo "export PYTHONPATH=/opt/gvm/lib/python3.9/site-packages" | sudo -Hiu gvm tee -a /opt/gvm/ospd.sh
 else
