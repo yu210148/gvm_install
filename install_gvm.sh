@@ -269,6 +269,7 @@ sudo -Hiu gvm echo "/opt/gvm/bin/gvm-manage-certs -a" | sudo -Hiu gvm tee -a /op
 su gvm -c "/opt/gvm/cron.sh"
 su gvm -c "rm /opt/gvm/cron.sh"
 
+# step 10 below
 
 # Build and Install OSPd and OSPd-OpenVAS
 su gvm -c "touch /opt/gvm/ospd.sh"
@@ -293,6 +294,8 @@ sudo -Hiu gvm echo "python3 setup.py install --prefix=/opt/gvm" | sudo -Hiu gvm 
 
 su gvm -c "/opt/gvm/ospd.sh"
 su gvm -c "rm /opt/gvm/ospd.sh"
+
+# step 11 below
 
 # I think we're good up until here and that it's in the steps below that things start to go sideways.
 
