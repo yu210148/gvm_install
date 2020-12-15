@@ -30,5 +30,5 @@ sudo -Hiu gvm echo "sudo /opt/gvm/sbin/gsad" | sudo -Hiu gvm tee -a /opt/gvm/sta
 # Wait a moment for the above to start up
 sudo -Hiu gvm echo "sleep 10" | sudo -Hiu gvm tee -a /opt/gvm/start.sh
 
-su gvm -c "/opt/gvm/start.sh"
-su gvm -c "rm /opt/gvm/start.sh"
+#su gvm -c "/opt/gvm/start.sh"
+#su gvm -c "rm /opt/gvm/start.sh"
