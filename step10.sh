@@ -32,5 +32,5 @@ sudo -Hiu gvm echo "python3 setup.py install --prefix=/opt/gvm" | sudo -Hiu gvm 
 sudo -Hiu gvm echo "cd ../ospd-openvas" | sudo -Hiu gvm tee -a /opt/gvm/ospd.sh
 sudo -Hiu gvm echo "python3 setup.py install --prefix=/opt/gvm" | sudo -Hiu gvm tee -a /opt/gvm/ospd.sh
 
-su gvm -c "/opt/gvm/ospd.sh"
-su gvm -c "rm /opt/gvm/ospd.sh"
+#su gvm -c "/opt/gvm/ospd.sh"
+#su gvm -c "rm /opt/gvm/ospd.sh"
