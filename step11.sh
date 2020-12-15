@@ -1,22 +1,34 @@
 #!/bin/bash
 
-# Update GVM CERT and SCAP data from the feed servers
-su gvm -c "touch /opt/gvm/feed.sh"
-su gvm -c "chmod u+x /opt/gvm/feed.sh"
+# step 11 below
 
-sudo -Hiu gvm echo "echo Sleeping 5 minutes" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
-sudo -Hiu gvm echo "echo More info can be found by searching greenbone-nvt-sync rsync connection refused on Google" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
-sudo -Hiu gvm echo "sleep 300" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh # allow a NAT connection to close
-sudo -Hiu gvm echo "sed -i '368isleep 120' /opt/gvm/sbin/greenbone-scapdata-sync" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
-sudo -Hiu gvm echo "echo Sleeping 2 minutes" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
-sudo -Hiu gvm echo "echo More info can be found by searching greenbone-nvt-sync rsync connection refused on Google" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
-sudo -Hiu gvm echo "greenbone-scapdata-sync" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
-sudo -Hiu gvm echo "echo Sleeping 5 minutes" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
-sudo -Hiu gvm echo "echo More info can be found by searching greenbone-nvt-sync rsync connection refused on Google" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
-sudo -Hiu gvm echo "sleep 300" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh # allow a NAT connection to close
-sudo -Hiu gvm echo "greenbone-certdata-sync" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
-# Add sleep to future greenbone-certdata-sync calls (https://github.com/yu210148/gvm_install/issues/2 --Thanks kirk56k)
-sudo -Hiu gvm echo "sed -i '349isleep 300' /opt/gvm/sbin/greenbone-certdata-sync" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
+# I think we're good up until here and that it's in the steps below that things start to go sideways.
 
-su gvm -c "/opt/gvm/feed.sh"
-su gvm -c "rm /opt/gvm/feed.sh"
+# Start OpenVAS Scanner, GSA and GVM services
+# Start OpenVAS
+su gvm -c "touch /opt/gvm/start.sh"
+su gvm -c "chmod u+x /opt/gvm/start.sh"
+
+PY3VER=`python3 --version | grep -o [0-9]\.[0-9]`
+sudo -Hiu gvm echo "export PYTHONPATH=/opt/gvm/lib/python$PY3VER/site-packages" | sudo -Hiu gvm tee -a /opt/gvm/start.sh
+
+#ID=`grep ^ID= /etc/os-release | sed 's/ID=//g'`
+#if [[ $ID = "debian" ]] || [[ $ID = "kali" ]]; then
+#    sudo -Hiu gvm echo "export PYTHONPATH=/opt/gvm/lib/python3.7/site-packages" | sudo -Hiu gvm tee -a /opt/gvm/start.sh
+#else
+#    sudo -Hiu gvm echo "export PYTHONPATH=/opt/gvm/lib/python3.8/site-packages" | sudo -Hiu gvm tee -a /opt/gvm/start.sh
+#fi
+sudo -Hiu gvm echo "/usr/bin/python3 /opt/gvm/bin/ospd-openvas --pid-file /opt/gvm/var/run/ospd-openvas.pid --log-file /opt/gvm/var/log/gvm/ospd-openvas.log --lock-file-dir /opt/gvm/var/run -u /opt/gvm/var/run/ospd.sock" | sudo -Hiu gvm tee -a /opt/gvm/start.sh
+# Start GVM
+sudo -Hiu gvm echo "/opt/gvm/sbin/gvmd --osp-vt-update=/opt/gvm/var/run/ospd.sock" | sudo -Hiu gvm tee -a /opt/gvm/start.sh
+# Start GSA
+sudo -Hiu gvm echo "sudo /opt/gvm/sbin/gsad" | sudo -Hiu gvm tee -a /opt/gvm/start.sh
+
+# Check the status
+#sudo -Hiu gvm echo "ps aux | grep -E \"ospd-openvas|gsad|gvmd\" | grep -v grep" | sudo -Hiu gvm tee -a /opt/gvm/.bashrc
+
+# Wait a moment for the above to start up
+sudo -Hiu gvm echo "sleep 10" | sudo -Hiu gvm tee -a /opt/gvm/start.sh
+
+su gvm -c "/opt/gvm/start.sh"
+su gvm -c "rm /opt/gvm/start.sh"
