@@ -1,30 +1,20 @@
 #!/bin/bash
+# Create GVM Scanner
+su gvm -c "touch /opt/gvm/scan.sh"
+su gvm -c "chmod u+x /opt/gvm/scan.sh"
+sudo -Hiu gvm echo -e "/opt/gvm/sbin/gvmd --create-scanner=\"Created OpenVAS Scanner\" --scanner-type=\"OpenVAS\" --scanner-host=/opt/gvm/var/run/ospd.sock" | sudo -Hiu gvm tee -a /opt/gvm/scan.sh
 
-# Update GVM CERT and SCAP data from the feed servers
-su gvm -c "touch /opt/gvm/cron.sh"
-su gvm -c "chmod u+x /opt/gvm/cron.sh"
+sudo -Hiu gvm echo "/opt/gvm/sbin/gvmd --get-scanners" | sudo -Hiu gvm tee -a /opt/gvm/scan.sh
 
-# Set cron jobs to run once daily at random times
-HOUR=$(shuf -i 0-23 -n 1)
-MINUTE=$(shuf -i 0-59 -n 1)
-sudo -Hiu gvm echo "(crontab -l 2>/dev/null; echo \"${MINUTE} ${HOUR} * * * /opt/gvm/sbin/greenbone-scapdata-sync\") | crontab -" | sudo -Hiu gvm tee -a /opt/gvm/cron.sh
+# Verify newly created scanner
+sudo -Hiu gvm echo -e "UUID=\$(/opt/gvm/sbin/gvmd --get-scanners | grep Created | awk '{print \$\1}')" | sed 's/\\//g' | sudo -Hiu gvm tee -a /opt/gvm/scan.sh
 
-HOUR=$(shuf -i 0-23 -n 1)
-MINUTE=$(shuf -i 0-59 -n 1)
-sudo -Hiu gvm echo "(crontab -l 2>/dev/null; echo \"${MINUTE} ${HOUR} * * * /opt/gvm/bin/greenbone-nvt-sync\") | crontab -" | sudo -Hiu gvm tee -a /opt/gvm/cron.sh
+# Wait a moment then verify the scanner
+sudo -Hiu gvm echo "sleep 10" | sudo -Hiu gvm tee -a /opt/gvm/scan.sh
+sudo -Hiu gvm echo -e "/opt/gvm/sbin/gvmd --verify-scanner=UUID" | sed 's/UUID/\$UUID/g' | sudo -Hiu gvm tee -a /opt/gvm/scan.sh
 
-HOUR=$(shuf -i 0-23 -n 1)
-MINUTE=$(shuf -i 0-59 -n 1)
-sudo -Hiu gvm echo "(crontab -l 2>/dev/null; echo \"${MINUTE} ${HOUR} * * * /opt/gvm/sbin/greenbone-certdata-sync\") | crontab -" | sudo -Hiu gvm tee -a /opt/gvm/cron.sh
+# Create OpenVAS (GVM 11) Admin
+sudo -Hiu gvm echo -e "/opt/gvm/sbin/gvmd --create-user gvmadmin --password=StrongPass" | sudo -Hiu gvm tee -a /opt/gvm/scan.sh
 
-# I know this is kludgy as this should be run after the nvt sync but if it gets 
-# run once a day that should do
-HOUR=$(shuf -i 0-23 -n 1)
-MINUTE=$(shuf -i 0-59 -n 1)
-sudo -Hiu gvm echo "(crontab -l 2>/dev/null; echo \"${MINUTE} ${HOUR} * * * /usr/bin/sudo /opt/gvm/sbin/openvas --update-vt-info\") | crontab -" | sudo -Hiu gvm tee -a /opt/gvm/cron.sh
-
-# Configure certs
-sudo -Hiu gvm echo "gvm-manage-certs -a" | sudo -Hiu gvm tee -a /opt/gvm/cron.sh
-
-su gvm -c "/opt/gvm/cron.sh"
-su gvm -c "rm /opt/gvm/cron.sh"
+su gvm -c "/opt/gvm/scan.sh"
+su gvm -c "rm /opt/gvm/scan.sh"

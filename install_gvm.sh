@@ -317,14 +317,22 @@ su gvm -c "chmod u+x /opt/gvm/start.sh"
 PY3VER=`python3 --version | grep -o [0-9]\.[0-9]`
 sudo -Hiu gvm echo "export PYTHONPATH=/opt/gvm/lib/python$PY3VER/site-packages" | sudo -Hiu gvm tee -a /opt/gvm/start.sh
 
-#ID=`grep ^ID= /etc/os-release | sed 's/ID=//g'`
-#if [[ $ID = "debian" ]] || [[ $ID = "kali" ]]; then
-#    sudo -Hiu gvm echo "export PYTHONPATH=/opt/gvm/lib/python3.7/site-packages" | sudo -Hiu gvm tee -a /opt/gvm/start.sh
-#else
-#    sudo -Hiu gvm echo "export PYTHONPATH=/opt/gvm/lib/python3.8/site-packages" | sudo -Hiu gvm tee -a /opt/gvm/start.sh
-#fi
+# the line below is failing on Kali with a traceback; on Debian with file not found 
+# Kali:
+#Traceback (most recent call last):
+#  File "/opt/gvm/bin/ospd-openvas", line 33, in <module>
+#    sys.exit(load_entry_point('ospd-openvas==1.0.1', 'console_scripts', 'ospd-openvas')())
+#  File "/opt/gvm/bin/ospd-openvas", line 22, in importlib_load_entry_point
+#    for entry_point in distribution(dist_name).entry_points
+#  File "/usr/lib/python3.9/importlib/metadata.py", line 524, in distribution
+#    return Distribution.from_name(distribution_name)
+#  File "/usr/lib/python3.9/importlib/metadata.py", line 187, in from_name
+#    raise PackageNotFoundError(name)
+#importlib.metadata.PackageNotFoundError: ospd-openvas
+#
+# Debian:
+# ERROR: get_db_connection: Not possible to run openvas. [Errno 2] No such file or directory: 'openvas': 'openvas'
 
-# the line below is failing
 sudo -Hiu gvm echo "/usr/bin/python3 /opt/gvm/bin/ospd-openvas --pid-file /opt/gvm/var/run/ospd-openvas.pid --log-file /opt/gvm/var/log/gvm/ospd-openvas.log --lock-file-dir /opt/gvm/var/run -u /opt/gvm/var/run/ospd.sock" | sudo -Hiu gvm tee -a /opt/gvm/start.sh
 
 # Start GVM
@@ -366,8 +374,6 @@ su gvm -c "rm /opt/gvm/scan.sh"
 # seems that /opt/gvm/bin and /opt/gvm/sbin aren't in user gvm's PATH so instead of having
 # all the full paths above you could put "export PATH=$PATH:/opt/gvm/bin:/opt/gvm/sbin" at 
 # the start of the above scripts. Not sure which is a better solution.
-
-#step 16 below
 
 # Leave gvm environment and clean up
 #sudo -Hiu gvm echo "exit" | sudo -Hiu gvm tee -a /opt/gvm/.bashrc
