@@ -317,22 +317,14 @@ su gvm -c "chmod u+x /opt/gvm/start.sh"
 PY3VER=`python3 --version | grep -o [0-9]\.[0-9]`
 sudo -Hiu gvm echo "export PYTHONPATH=/opt/gvm/lib/python$PY3VER/site-packages" | sudo -Hiu gvm tee -a /opt/gvm/start.sh
 
-# the line below is failing on Kali with a traceback; on Debian with file not found 
-# Kali:
-#Traceback (most recent call last):
-#  File "/opt/gvm/bin/ospd-openvas", line 33, in <module>
-#    sys.exit(load_entry_point('ospd-openvas==1.0.1', 'console_scripts', 'ospd-openvas')())
-#  File "/opt/gvm/bin/ospd-openvas", line 22, in importlib_load_entry_point
-#    for entry_point in distribution(dist_name).entry_points
-#  File "/usr/lib/python3.9/importlib/metadata.py", line 524, in distribution
-#    return Distribution.from_name(distribution_name)
-#  File "/usr/lib/python3.9/importlib/metadata.py", line 187, in from_name
-#    raise PackageNotFoundError(name)
-#importlib.metadata.PackageNotFoundError: ospd-openvas
-#
-# Debian:
-# ERROR: get_db_connection: Not possible to run openvas. [Errno 2] No such file or directory: 'openvas': 'openvas'
+#ID=`grep ^ID= /etc/os-release | sed 's/ID=//g'`
+#if [[ $ID = "debian" ]] || [[ $ID = "kali" ]]; then
+#    sudo -Hiu gvm echo "export PYTHONPATH=/opt/gvm/lib/python3.7/site-packages" | sudo -Hiu gvm tee -a /opt/gvm/start.sh
+#else
+#    sudo -Hiu gvm echo "export PYTHONPATH=/opt/gvm/lib/python3.8/site-packages" | sudo -Hiu gvm tee -a /opt/gvm/start.sh
+#fi
 
+# the line below is failing
 sudo -Hiu gvm echo "/usr/bin/python3 /opt/gvm/bin/ospd-openvas --pid-file /opt/gvm/var/run/ospd-openvas.pid --log-file /opt/gvm/var/log/gvm/ospd-openvas.log --lock-file-dir /opt/gvm/var/run -u /opt/gvm/var/run/ospd.sock" | sudo -Hiu gvm tee -a /opt/gvm/start.sh
 
 # Start GVM
@@ -347,128 +339,4 @@ sudo -Hiu gvm echo "sudo /opt/gvm/sbin/gsad" | sudo -Hiu gvm tee -a /opt/gvm/sta
 sudo -Hiu gvm echo "sleep 10" | sudo -Hiu gvm tee -a /opt/gvm/start.sh
 
 su gvm -c "/opt/gvm/start.sh"
-su gvm -c "rm /opt/gvm/start.sh"
-
-# step 12 below
-
-# Create GVM Scanner
-su gvm -c "touch /opt/gvm/scan.sh"
-su gvm -c "chmod u+x /opt/gvm/scan.sh"
-sudo -Hiu gvm echo -e "/opt/gvm/sbin/gvmd --create-scanner=\"Created OpenVAS Scanner\" --scanner-type=\"OpenVAS\" --scanner-host=/opt/gvm/var/run/ospd.sock" | sudo -Hiu gvm tee -a /opt/gvm/scan.sh
-
-sudo -Hiu gvm echo "/opt/gvm/sbin/gvmd --get-scanners" | sudo -Hiu gvm tee -a /opt/gvm/scan.sh
-
-# Verify newly created scanner
-sudo -Hiu gvm echo -e "UUID=\$(/opt/gvm/sbin/gvmd --get-scanners | grep Created | awk '{print \$\1}')" | sed 's/\\//g' | sudo -Hiu gvm tee -a /opt/gvm/scan.sh
-
-# Wait a moment then verify the scanner
-sudo -Hiu gvm echo "sleep 10" | sudo -Hiu gvm tee -a /opt/gvm/scan.sh
-sudo -Hiu gvm echo -e "/opt/gvm/sbin/gvmd --verify-scanner=UUID" | sed 's/UUID/\$UUID/g' | sudo -Hiu gvm tee -a /opt/gvm/scan.sh
-
-# Create OpenVAS (GVM 11) Admin
-sudo -Hiu gvm echo -e "/opt/gvm/sbin/gvmd --create-user gvmadmin --password=StrongPass" | sudo -Hiu gvm tee -a /opt/gvm/scan.sh
-
-su gvm -c "/opt/gvm/scan.sh"
-su gvm -c "rm /opt/gvm/scan.sh"
-
-# seems that /opt/gvm/bin and /opt/gvm/sbin aren't in user gvm's PATH so instead of having
-# all the full paths above you could put "export PATH=$PATH:/opt/gvm/bin:/opt/gvm/sbin" at 
-# the start of the above scripts. Not sure which is a better solution.
-
-# Leave gvm environment and clean up
-#sudo -Hiu gvm echo "exit" | sudo -Hiu gvm tee -a /opt/gvm/.bashrc
-#su gvm
-# Debugging
-#sudo -Hiu gvm mv /opt/gvm/.bashrc /opt/gvm/just-ran-bashrc.txt
-#sudo -Hiu gvm rm /opt/gvm/.bashrc
-#sudo -Hiu gvm mv /opt/gvm/.bashrc.bak /opt/gvm/.bashrc
-
-# Set firewall to allow access on port 443 and 22
-ufw allow 443
-ufw allow 22
-ufw --force enable
-
-# Create systemd services for OpenVAS Scanner, GSA, and GVM services
-echo "[Unit]" > /etc/systemd/system/openvas.service
-echo "Description=Control the OpenVAS service" >> /etc/systemd/system/openvas.service
-echo "After=redis.service" >> /etc/systemd/system/openvas.service
-echo "After=postgresql.service" >> /etc/systemd/system/openvas.service
-echo -e "\n" >> /etc/systemd/system/openvas.service
-echo "[Service]" >> /etc/systemd/system/openvas.service
-echo "ExecStartPre=-rm /opt/gvm/var/run/ospd-openvas.pid /opt/gvm/var/run/ospd.sock /opt/gvm/var/run/gvmd.sock" >> /etc/systemd/system/openvas.service
-echo "Type=simple" >> /etc/systemd/system/openvas.service
-echo "User=gvm" >> /etc/systemd/system/openvas.service
-echo "Group=gvm" >> /etc/systemd/system/openvas.service
-echo "Environment=PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/opt/gvm/bin:/opt/gvm/sbin:/opt/gvm/.local/bin" >> /etc/systemd/system/openvas.service
-echo "Environment=PYTHONPATH=/opt/gvm/lib/python3.8/site-packages" >> /etc/systemd/system/openvas.service
-echo -e "ExecStart=/usr/bin/python3 /opt/gvm/bin/ospd-openvas --pid-file /opt/gvm/var/run/ospd-openvas.pid --log-file /opt/gvm/var/log/gvm/ospd-openvas.log --lock-file-dir /opt/gvm/var/run -u /opt/gvm/var/run/ospd.sock" >> /etc/systemd/system/openvas.service
-echo "RemainAfterExit=yes" >> /etc/systemd/system/openvas.service
-echo -e "\n" >> /etc/systemd/system/openvas.service
-echo "[Install]" >> /etc/systemd/system/openvas.service
-echo "WantedBy=multi-user.target" >> /etc/systemd/system/openvas.service
-
-echo "[Unit]" > /etc/systemd/system/gvm.service
-echo "Description=Control the OpenVAS GVM service" >> /etc/systemd/system/gvm.service
-echo "After=openvas.service" >> /etc/systemd/system/gvm.service
-echo -e "\n" >> /etc/systemd/system/gvm.service
-echo "[Service]" >> /etc/systemd/system/gvm.service
-echo "Type=simple" >> /etc/systemd/system/gvm.service
-echo "User=gvm" >> /etc/systemd/system/gvm.service
-echo "Group=gvm" >> /etc/systemd/system/gvm.service
-echo "Environment=PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/opt/gvm/bin:/opt/gvm/sbin:/opt/gvm/.local/bin" >> /etc/systemd/system/gvm.service
-echo "Environment=PYTHONPATH=/opt/gvm/lib/python3.8/site-packages" >> /etc/systemd/system/gvm.service
-echo -e "ExecStart=/opt/gvm/sbin/gvmd --osp-vt-update=/opt/gvm/var/run/ospd.sock" >> /etc/systemd/system/gvm.service
-echo "RemainAfterExit=yes" >> /etc/systemd/system/gvm.service
-echo -e "\n" >> /etc/systemd/system/gvm.service
-echo "[Install]" >> /etc/systemd/system/gvm.service
-echo "WantedBy=multi-user.target" >> /etc/systemd/system/gvm.service
-
-echo "[Unit]" > /etc/systemd/system/gvm.path
-echo "Description=Start the OpenVAS GVM service when opsd.sock is available" >> /etc/systemd/system/gvm.path
-echo -e "\n" >> /etc/systemd/system/gvm.path
-echo "[Path]" >> /etc/systemd/system/gvm.path
-echo "PathChanged=/opt/gvm/var/run/ospd.sock" >> /etc/systemd/system/gvm.path
-echo "Unit=gvm.service" >> /etc/systemd/system/gvm.path
-echo -e "\n" >> /etc/systemd/system/gvm.path
-echo "[Install]" >> /etc/systemd/system/gvm.path
-echo "WantedBy=multi-user.target" >> /etc/systemd/system/gvm.path
-
-echo "[Unit]" > /etc/systemd/system/gsa.service
-echo "Description=Control the OpenVAS GSA service" >> /etc/systemd/system/gsa.service
-echo "After=openvas.service" >> /etc/systemd/system/gsa.service
-echo -e "\n" >> /etc/systemd/system/gsa.service
-echo "[Service]" >> /etc/systemd/system/gsa.service
-echo "Type=simple" >> /etc/systemd/system/gsa.service
-echo "User=gvm" >> /etc/systemd/system/gsa.service
-echo "Group=gvm" >> /etc/systemd/system/gsa.service
-echo "Environment=PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/opt/gvm/bin:/opt/gvm/sbin:/opt/gvm/.local/bin" >> /etc/systemd/system/gsa.service
-echo "Environment=PYTHONPATH=/opt/gvm/lib/python3.8/site-packages" >> /etc/systemd/system/gsa.service
-echo -e "ExecStart=/usr/bin/sudo /opt/gvm/sbin/gsad" >> /etc/systemd/system/gsa.service
-echo "RemainAfterExit=yes" >> /etc/systemd/system/gsa.service
-echo -e "\n" >> /etc/systemd/system/gsa.service
-echo "[Install]" >> /etc/systemd/system/gsa.service
-echo "WantedBy=multi-user.target" >> /etc/systemd/system/gsa.service
-
-echo "[Unit]" > /etc/systemd/system/gsa.path
-echo "Description=Start the OpenVAS GSA service when gvmd.sock is available" >> /etc/systemd/system/gsa.path
-echo -e "\n" >> /etc/systemd/system/gsa.path
-echo "[Path]" >> /etc/systemd/system/gsa.path
-echo "PathChanged=/opt/gvm/var/run/gvmd.sock" >> /etc/systemd/system/gsa.path
-echo "Unit=gsa.service" >> /etc/systemd/system/gsa.path
-echo -e "\n" >> /etc/systemd/system/gsa.path
-echo "[Install]" >> /etc/systemd/system/gsa.path
-echo "WantedBy=multi-user.target" >> /etc/systemd/system/gsa.path
-
-
-systemctl daemon-reload
-systemctl enable --now openvas
-systemctl enable --now gvm.{path,service}
-systemctl enable --now gsa.{path,service}
-
-
-# REMIND USER TO CHANGE DEFAULT PASSWORD
-echo "The installation is done, but there may still be an update in progress."
-echo "Please be patient if you aren't able to log in at first."
-echo "Username is gvmadmin and pasword is StrongPass"
-echo "Remember to change this default password"
-echo "sudo -Hiu gvm gvmd --user=gvmadmin --new-password=<PASSWORD>"
+#su gvm -c "rm /opt/gvm/start.sh"
