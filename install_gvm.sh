@@ -400,7 +400,11 @@ echo "Type=simple" >> /etc/systemd/system/openvas.service
 echo "User=gvm" >> /etc/systemd/system/openvas.service
 echo "Group=gvm" >> /etc/systemd/system/openvas.service
 echo "Environment=PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/opt/gvm/bin:/opt/gvm/sbin:/opt/gvm/.local/bin" >> /etc/systemd/system/openvas.service
-echo "Environment=PYTHONPATH=/opt/gvm/lib/python3.8/site-packages" >> /etc/systemd/system/openvas.service
+
+PY3VER=`python3 --version | grep -o [0-9]\.[0-9]`
+echo "Environment=PYTHONPATH=/opt/gvm/lib/python$PY3VER/site-packages" >> /etc/systemd/system/openvas.service
+
+
 echo -e "ExecStart=/usr/bin/python3 /opt/gvm/bin/ospd-openvas --pid-file /opt/gvm/var/run/ospd-openvas.pid --log-file /opt/gvm/var/log/gvm/ospd-openvas.log --lock-file-dir /opt/gvm/var/run -u /opt/gvm/var/run/ospd.sock" >> /etc/systemd/system/openvas.service
 echo "RemainAfterExit=yes" >> /etc/systemd/system/openvas.service
 echo -e "\n" >> /etc/systemd/system/openvas.service
@@ -416,7 +420,7 @@ echo "Type=simple" >> /etc/systemd/system/gvm.service
 echo "User=gvm" >> /etc/systemd/system/gvm.service
 echo "Group=gvm" >> /etc/systemd/system/gvm.service
 echo "Environment=PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/opt/gvm/bin:/opt/gvm/sbin:/opt/gvm/.local/bin" >> /etc/systemd/system/gvm.service
-echo "Environment=PYTHONPATH=/opt/gvm/lib/python3.8/site-packages" >> /etc/systemd/system/gvm.service
+echo "Environment=PYTHONPATH=/opt/gvm/lib/python$PY3VER/site-packages" >> /etc/systemd/system/gvm.service
 echo -e "ExecStart=/opt/gvm/sbin/gvmd --osp-vt-update=/opt/gvm/var/run/ospd.sock" >> /etc/systemd/system/gvm.service
 echo "RemainAfterExit=yes" >> /etc/systemd/system/gvm.service
 echo -e "\n" >> /etc/systemd/system/gvm.service
@@ -442,7 +446,7 @@ echo "Type=simple" >> /etc/systemd/system/gsa.service
 echo "User=gvm" >> /etc/systemd/system/gsa.service
 echo "Group=gvm" >> /etc/systemd/system/gsa.service
 echo "Environment=PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/opt/gvm/bin:/opt/gvm/sbin:/opt/gvm/.local/bin" >> /etc/systemd/system/gsa.service
-echo "Environment=PYTHONPATH=/opt/gvm/lib/python3.8/site-packages" >> /etc/systemd/system/gsa.service
+echo "Environment=PYTHONPATH=/opt/gvm/lib/python$PY3VER/site-packages" >> /etc/systemd/system/gsa.service
 echo -e "ExecStart=/usr/bin/sudo /opt/gvm/sbin/gsad" >> /etc/systemd/system/gsa.service
 echo "RemainAfterExit=yes" >> /etc/systemd/system/gsa.service
 echo -e "\n" >> /etc/systemd/system/gsa.service
