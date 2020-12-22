@@ -14,6 +14,18 @@
 #
 # Licensed under GPLv3 or later
 ######################################################################
+
+read -p "Would you like to install version 11 or 20? " GVMVERSION
+
+# validate input
+if [[ $GVMVERSION = "11" ]] || [[ $GVMVERSION = "20" ]]; then
+    echo "Okay, installing version $GVMVERSION"
+else 
+    echo "Sorry, I didn't understand the input $GVMVERSION."
+    echo "Please re-run install_gvm.sh and enter a version number at the prompt"
+    exit 1
+fi
+
 apt-get update
 apt-get upgrade
 useradd -r -d /opt/gvm -c "GVM (OpenVAS) User" -s /bin/bash gvm
@@ -47,14 +59,30 @@ sed -i 's/\"$/\:\/opt\/gvm\/bin\:\/opt\/gvm\/sbin\:\/opt\/gvm\/\.local\/bin\"/g'
 echo "/opt/gvm/lib" > /etc/ld.so.conf.d/gvm.conf
 sudo -Hiu gvm mkdir /tmp/gvm-source
 cd /tmp/gvm-source
-sudo -Hiu gvm git clone -b gvm-libs-11.0 https://github.com/greenbone/gvm-libs.git
-sudo -Hiu gvm git clone https://github.com/greenbone/openvas-smb.git
-sudo -Hiu gvm git clone -b openvas-7.0 https://github.com/greenbone/openvas.git
-sudo -Hiu gvm git clone -b ospd-2.0 https://github.com/greenbone/ospd.git
-sudo -Hiu gvm git clone -b ospd-openvas-1.0 https://github.com/greenbone/ospd-openvas.git
-sudo -Hiu gvm git clone -b gvmd-9.0 https://github.com/greenbone/gvmd.git
-sudo -Hiu gvm git clone -b gsa-9.0 https://github.com/greenbone/gsa.git
+
+if [ $GVMVERSION = "11" ]; then
+    # if installing GVM ver. 11 
+    sudo -Hiu gvm git clone -b gvm-libs-11.0 https://github.com/greenbone/gvm-libs.git
+    sudo -Hiu gvm git clone https://github.com/greenbone/openvas-smb.git
+    sudo -Hiu gvm git clone -b openvas-7.0 https://github.com/greenbone/openvas.git
+    sudo -Hiu gvm git clone -b ospd-2.0 https://github.com/greenbone/ospd.git
+    sudo -Hiu gvm git clone -b ospd-openvas-1.0 https://github.com/greenbone/ospd-openvas.git
+    sudo -Hiu gvm git clone -b gvmd-9.0 https://github.com/greenbone/gvmd.git
+    sudo -Hiu gvm git clone -b gsa-9.0 https://github.com/greenbone/gsa.git
+elif [ $GVMVERSION = "20" ]; then
+    sudo -Hiu gvm git clone -b gvm-libs-20.08 https://github.com/greenbone/gvm-libs.git
+    sudo -Hiu gvm git clone https://github.com/greenbone/openvas-smb.git
+    sudo -Hiu gvm git clone -b openvas-20.08 https://github.com/greenbone/openvas.git
+    sudo -Hiu gvm git clone -b ospd-20.08 https://github.com/greenbone/ospd.git
+    sudo -Hiu gvm git clone -b ospd-openvas-20.08 https://github.com/greenbone/ospd-openvas.git
+    sudo -Hiu gvm git clone -b gvmd-20.08 https://github.com/greenbone/gvmd.git
+    sudo -Hiu gvm git clone -b gsa-20.08 https://github.com/greenbone/gsa.git
+    sudo -Hiu gvm git clone https://github.com/greenbone/python-gvm.git
+    sudo -Hiu gvm git clone https://github.com/greenbone/gvm-tools.git
+fi
+
 sudo -Hiu gvm cp --recursive /opt/gvm/* /tmp/gvm-source/
+
 
 # Kali linux 2020.4 puts a message about python2 in that's causing problems below. This should workaround.
 if [[ $ID = "debian" ]] || [[ $ID = "kali" ]]; then
@@ -225,16 +253,30 @@ su gvm -c "chmod u+x /opt/gvm/feed.sh"
 sudo -Hiu gvm echo "echo Sleeping 5 minutes" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
 sudo -Hiu gvm echo "echo More info can be found by searching greenbone-nvt-sync rsync connection refused on Google" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
 sudo -Hiu gvm echo "sleep 300" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh # allow a NAT connection to close
-sudo -Hiu gvm echo "sed -i '368isleep 120' /opt/gvm/sbin/greenbone-scapdata-sync" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
+if [ $GVMVERSION = "11" ]; then
+    sudo -Hiu gvm echo "sed -i '368isleep 120' /opt/gvm/sbin/greenbone-scapdata-sync" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
+elif [ $GVMVERSION = "20" ]; then
+    sudo -Hiu gvm echo "sed -i '368isleep 120' /opt/gvm/sbin/greenbone-feed-sync --type SCAP" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
+fi
+
 sudo -Hiu gvm echo "echo Sleeping 2 minutes" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
 sudo -Hiu gvm echo "echo More info can be found by searching greenbone-nvt-sync rsync connection refused on Google" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
 sudo -Hiu gvm echo "/opt/gvm/sbin/greenbone-scapdata-sync" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
 sudo -Hiu gvm echo "echo Sleeping 5 minutes" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
 sudo -Hiu gvm echo "echo More info can be found by searching greenbone-nvt-sync rsync connection refused on Google" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
 sudo -Hiu gvm echo "sleep 300" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh # allow a NAT connection to close
-sudo -Hiu gvm echo "/opt/gvm/sbin/greenbone-certdata-sync" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
+
 # Add sleep to future greenbone-certdata-sync calls (https://github.com/yu210148/gvm_install/issues/2 --Thanks kirk56k)
-sudo -Hiu gvm echo "sed -i '349isleep 300' /opt/gvm/sbin/greenbone-certdata-sync" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
+if [ $GVMVERSION = "11" ]; then
+    sudo -Hiu gvm echo "sed -i '349isleep 300' /opt/gvm/sbin/greenbone-certdata-sync" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
+    sudo -Hiu gvm echo "/opt/gvm/sbin/greenbone-certdata-sync" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
+elif [ $GVMVERSION = "20" ]; then
+    # according to the reporter in Issue12 this is what's needed however, it seems unlikely to me that inserting the sleep statement into line 349 of
+    # /opt/gvm/greenbone-feed-sync is the same as inserting it into line 349 of greenbone-certdata-sync in version 11
+    # same goes for the sed statement above.
+    sudo -Hiu gvm echo "sed -i '349isleep 300' /opt/gvm/sbin/greenbone-feed-sync --type CERT" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
+    sudo -Hiu gvm echo "/opt/gvm/sbin/greenbone-feed-sync --type GVMD_DATA" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
+fi
 
 su gvm -c "/opt/gvm/feed.sh"
 su gvm -c "rm /opt/gvm/feed.sh"
@@ -247,15 +289,34 @@ su gvm -c "chmod u+x /opt/gvm/cron.sh"
 
 HOUR=$(shuf -i 0-23 -n 1)
 MINUTE=$(shuf -i 0-59 -n 1)
-sudo -Hiu gvm echo "(crontab -l 2>/dev/null; echo \"${MINUTE} ${HOUR} * * * /opt/gvm/sbin/greenbone-scapdata-sync\") | crontab -" | sudo -Hiu gvm tee -a /opt/gvm/cron.sh
+if [ $GVMVERSION = "11" ]; then
+    sudo -Hiu gvm echo "(crontab -l 2>/dev/null; echo \"${MINUTE} ${HOUR} * * * /opt/gvm/sbin/greenbone-scapdata-sync\") | crontab -" | sudo -Hiu gvm tee -a /opt/gvm/cron.sh
+elif [ $GVMVERSION = "20" ]; then
+    sudo -Hiu gvm echo "(crontab -l 2>/dev/null; echo \"${MINUTE} ${HOUR} * * * /opt/gvm/sbin/greenbone-feed-sync --type SCAP\") | crontab -" | sudo -Hiu gvm tee -a /opt/gvm/cron.sh
+fi
 
 HOUR=$(shuf -i 0-23 -n 1)
 MINUTE=$(shuf -i 0-59 -n 1)
-sudo -Hiu gvm echo "(crontab -l 2>/dev/null; echo \"${MINUTE} ${HOUR} * * * /opt/gvm/bin/greenbone-nvt-sync\") | crontab -" | sudo -Hiu gvm tee -a /opt/gvm/cron.sh
+if [ $GVMVERSION = "11" ]; then
+    sudo -Hiu gvm echo "(crontab -l 2>/dev/null; echo \"${MINUTE} ${HOUR} * * * /opt/gvm/bin/greenbone-nvt-sync\") | crontab -" | sudo -Hiu gvm tee -a /opt/gvm/cron.sh
+elif [ $GVMVERSION = "20" ]; then
+    # I realise these are the same but I suspect they may need to be different.
+    sudo -Hiu gvm echo "(crontab -l 2>/dev/null; echo \"${MINUTE} ${HOUR} * * * /opt/gvm/bin/greenbone-nvt-sync\") | crontab -" | sudo -Hiu gvm tee -a /opt/gvm/cron.sh
+fi
 
 HOUR=$(shuf -i 0-23 -n 1)
 MINUTE=$(shuf -i 0-59 -n 1)
-sudo -Hiu gvm echo "(crontab -l 2>/dev/null; echo \"${MINUTE} ${HOUR} * * * /opt/gvm/sbin/greenbone-certdata-sync\") | crontab -" | sudo -Hiu gvm tee -a /opt/gvm/cron.sh
+if [ $GVMVERSION = "11" ]; then
+    sudo -Hiu gvm echo "(crontab -l 2>/dev/null; echo \"${MINUTE} ${HOUR} * * * /opt/gvm/sbin/greenbone-certdata-sync\") | crontab -" | sudo -Hiu gvm tee -a /opt/gvm/cron.sh
+elif [ $GVMVERSION = "20" ]; then
+    sudo -Hiu gvm echo "(crontab -l 2>/dev/null; echo \"${MINUTE} ${HOUR} * * * /opt/gvm/sbin/greenbone-feed-sync --type CERT\") | crontab -" | sudo -Hiu gvm tee -a /opt/gvm/cron.sh
+fi
+
+HOUR=$(shuf -i 0-23 -n 1)
+MINUTE=$(shuf -i 0-59 -n 1)
+if [ $GVMVERSION = "20" ]; then
+    sudo -Hiu gvm echo "(crontab -l 2>/dev/null; echo \"${MINUTE} ${HOUR} * * * /opt/gvm/sbin/greenbone-feed-sync --type GVMD_DATA\") | crontab -" | sudo -Hiu gvm tee -a /opt/gvm/cron.sh
+fi
 
 # I know this is kludgy as this should be run after the nvt sync but if it gets 
 # run once a day that should do
@@ -367,6 +428,11 @@ sudo -Hiu gvm echo -e "/opt/gvm/sbin/gvmd --verify-scanner=UUID" | sed 's/UUID/\
 
 # Create OpenVAS (GVM 11) Admin
 sudo -Hiu gvm echo -e "/opt/gvm/sbin/gvmd --create-user gvmadmin --password=StrongPass" | sudo -Hiu gvm tee -a /opt/gvm/scan.sh
+
+if [ $GVMVERSION = "20" ]; then
+    # Update feed sync GVMD_Data enable
+    sudo -Hiu gvm echo -e "gvmd --get-users --verbose | cut -d " " -f 2 | xargs gvmd --modify-setting 78eceaec-3385-11ea-b237-28d24461215b --value " | sudo -Hiu gvm tee -a /opt/gvm/scan.sh
+fi
 
 su gvm -c "/opt/gvm/scan.sh"
 su gvm -c "rm /opt/gvm/scan.sh"
