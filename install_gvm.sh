@@ -431,7 +431,7 @@ sudo -Hiu gvm echo -e "/opt/gvm/sbin/gvmd --create-user gvmadmin --password=Stro
 
 if [ $GVMVERSION = "20" ]; then
     # Update feed sync GVMD_Data enable
-    sudo -Hiu gvm echo -e "gvmd --get-users --verbose | cut -d " " -f 2 | xargs gvmd --modify-setting 78eceaec-3385-11ea-b237-28d24461215b --value " | sudo -Hiu gvm tee -a /opt/gvm/scan.sh
+    sudo -Hiu gvm echo -e "/opt/gvm/sbin/gvmd --get-users --verbose | cut -d \" \" -f 2 | xargs /opt/gvm/sbin/gvmd --modify-setting 78eceaec-3385-11ea-b237-28d24461215b --value " | sudo -Hiu gvm tee -a /opt/gvm/scan.sh
 fi
 
 su gvm -c "/opt/gvm/scan.sh"
