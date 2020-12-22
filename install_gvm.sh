@@ -256,7 +256,7 @@ sudo -Hiu gvm echo "sleep 300" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh # allow a
 if [ $GVMVERSION = "11" ]; then
     sudo -Hiu gvm echo "sed -i '368isleep 120' /opt/gvm/sbin/greenbone-scapdata-sync" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
 elif [ $GVMVERSION = "20" ]; then
-    sudo -Hiu gvm echo "sed -i '368isleep 120' /opt/gvm/sbin/greenbone-feed-sync --type SCAP" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
+    #sudo -Hiu gvm echo "sed -i '368isleep 120' /opt/gvm/sbin/greenbone-feed-sync --type SCAP" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
 fi
 
 sudo -Hiu gvm echo "echo Sleeping 2 minutes" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
@@ -274,7 +274,7 @@ elif [ $GVMVERSION = "20" ]; then
     # according to the reporter in Issue12 this is what's needed however, it seems unlikely to me that inserting the sleep statement into line 349 of
     # /opt/gvm/greenbone-feed-sync is the same as inserting it into line 349 of greenbone-certdata-sync in version 11
     # same goes for the sed statement above.
-    sudo -Hiu gvm echo "sed -i '349isleep 300' /opt/gvm/sbin/greenbone-feed-sync --type CERT" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
+    #sudo -Hiu gvm echo "sed -i '349isleep 300' /opt/gvm/sbin/greenbone-feed-sync --type CERT" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
     sudo -Hiu gvm echo "/opt/gvm/sbin/greenbone-feed-sync --type GVMD_DATA" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
 fi
 
@@ -539,6 +539,7 @@ systemctl enable --now gsa.{path,service}
 # REMIND USER TO CHANGE DEFAULT PASSWORD
 echo "The installation is done, but there may still be an update in progress."
 echo "Please be patient if you aren't able to log in at first."
+echo "You may also need to restart"
 echo "Username is gvmadmin and pasword is StrongPass"
 echo "Remember to change this default password"
 echo "sudo -Hiu gvm gvmd --user=gvmadmin --new-password=<PASSWORD>"
