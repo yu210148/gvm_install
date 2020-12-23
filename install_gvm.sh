@@ -46,10 +46,9 @@ sudo -Hiu postgres psql -c 'create extension "uuid-ossp";' gvmd
 systemctl restart postgresql
 systemctl enable postgresql
 
-# step 1 above 2 below
-
 # Kali Linux uses postgresql 13 which cmake doesn't know about as of version 3.18 so it get's added here
-# should have no effect on Debian stable as the line starts with "11" rather than "12" so it won't be matched
+# should have no effect on Debian stable as the line starts with "11" rather than "12" so it won't be matched.
+# It throws an error but it's not critical.
 ID=`grep ^ID= /etc/os-release | sed 's/ID=//g'`
 if [[ $ID = "debian" ]] || [[ $ID = "kali" ]]; then
     sed -i 's/"12" "11" "10"/"13" "12" "11" "10"/g' /usr/share/cmake-3.18/Modules/FindPostgreSQL.cmake
@@ -126,8 +125,6 @@ su gvm
 sudo -Hiu gvm rm /opt/gvm/.bashrc
 sudo -Hiu gvm mv /opt/gvm/.bashrc.bak /opt/gvm/.bashrc
 
-#step 4 below
-
 # Configuring OpenVAS
 ldconfig
 cp /tmp/gvm-source/openvas/config/redis-openvas.conf /etc/redis/
@@ -170,10 +167,7 @@ else
     sed 's/Defaults\s.*secure_path=\"\/usr\/local\/sbin:\/usr\/local\/bin:\/usr\/sbin:\/usr\/bin:\/sbin:\/bin:\/snap\/bin\"/Defaults secure_path=\"\/usr\/local\/sbin:\/usr\/local\/bin:\/usr\/sbin:\/usr\/bin:\/sbin:\/bin:\/snap\/bin:\/opt\/gvm\/sbin:\/opt\/gvm\/bin"/g' /etc/sudoers | EDITOR='tee' visudo
 fi
 
-#sed 's/Defaults\s.*secure_path=\"\/usr\/local\/sbin:\/usr\/local\/bin:\/usr\/sbin:\/usr\/bin:\/sbin:\/bin:\/snap\/bin\"/Defaults secure_path=\"\/usr\/local\/sbin:\/usr\/local\/bin:\/usr\/sbin:\/usr\/bin:\/sbin:\/bin:\/snap\/bin:\/opt\/gvm\/sbin\"/g' /etc/sudoers | EDITOR='tee' visudo
 echo "gvm ALL = NOPASSWD: /opt/gvm/sbin/gsad" >> /etc/sudoers.d/gvm
-
-# step 5 below
 
 #Update OpenVAS NVTs
 sudo -Hiu gvm touch /opt/gvm/.bashrc
@@ -185,17 +179,6 @@ sudo -Hiu gvm touch /opt/gvm/.bashrc
 # need to add a sleep command in that file to pause the sync so that the NAT connection can close
 # file is in /opt/gvm/bin and the line to edit is 364. More info can be found by searching
 # greenbone-nvt-sync rsync connection refused
-#
-# add in the following
-#  # sleep to allow NAT connection to close                                                                                                                                                   
-#  sleep 300
-#sudo -Hiu gvm echo "sed -i '364isleep 300' /opt/gvm/bin/greenbone-nvt-sync" | sudo -Hiu gvm tee -a /opt/gvm/.bashrc
-#sudo -Hiu gvm echo "echo 'Sleeping for 5 minutes'" | sudo -Hiu gvm tee -a /opt/gvm/.bashrc
-#sudo -Hiu gvm echo "echo 'More info can be found by searching greenbone-nvt-sync rsync connection refused on Google'" | sudo -Hiu gvm tee -a /opt/gvm/.bashrc
-#sudo -Hiu gvm echo "greenbone-nvt-sync" | sudo -Hiu gvm tee -a /opt/gvm/.bashrc
-
-
-#sudo -Hiu gvm echo "sudo openvas --update-vt-info" | sudo -Hiu gvm tee -a /opt/gvm/.bashrc
 
 # trying this a different way here TODO: might need to refactor the rest to use this method. Trouble is that the export PKG_CONFIG_PATH doesn't persist though.
 su gvm -c "sed -i '364isleep 300' /opt/gvm/bin/greenbone-nvt-sync"
@@ -203,8 +186,6 @@ su gvm -c "sed -i '364iecho Sleeping for 5 minutes' /opt/gvm/bin/greenbone-nvt-s
 su gvm -c 'echo "More info can be found by searching greenbone-nvt-sync rsync connection refused on Google"'
 su gvm -c /opt/gvm/bin/greenbone-nvt-sync
 /opt/gvm/sbin/openvas --update-vt-info
-
-# step 6 below
 
 # Build and Install Greenbone Vulnerability Manager
 su gvm -c "touch /opt/gvm/gvm_build.sh"
@@ -220,8 +201,6 @@ sudo -Hiu gvm echo "make install" | sudo -Hiu gvm tee -a /opt/gvm/gvm_build.sh
 
 su gvm -c "/opt/gvm/gvm_build.sh"
 su gvm -c "rm /opt/gvm/gvm_build.sh"
-
-# step 7 below
 
 # Build and Install Greenbone Secuirty Assistant
 su gvm -c "touch /opt/gvm/gsa_build.sh"
@@ -244,8 +223,6 @@ sudo -Hiu gvm echo "make install" | sudo -Hiu gvm tee -a /opt/gvm/gsa_build.sh
 su gvm -c "/opt/gvm/gsa_build.sh"
 su gvm -c "rm /opt/gvm/gsa_build.sh"
 
-# step 8 below
-
 # Update GVM CERT and SCAP data from the feed servers
 su gvm -c "touch /opt/gvm/feed.sh"
 su gvm -c "chmod u+x /opt/gvm/feed.sh"
@@ -256,6 +233,7 @@ sudo -Hiu gvm echo "sleep 300" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh # allow a
 if [ $GVMVERSION = "11" ]; then
     sudo -Hiu gvm echo "sed -i '368isleep 120' /opt/gvm/sbin/greenbone-scapdata-sync" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
 elif [ $GVMVERSION = "20" ]; then
+    # This makes no sense. TODO: Line 368 in gvm 11 does not equal line 386 in gvm 20 so where's the right place to put this sleep command?
     #sudo -Hiu gvm echo "sed -i '368isleep 120' /opt/gvm/sbin/greenbone-feed-sync --type SCAP" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
 fi
 
@@ -280,8 +258,6 @@ fi
 
 su gvm -c "/opt/gvm/feed.sh"
 su gvm -c "rm /opt/gvm/feed.sh"
-
-# step 9 below
 
 # Set cron jobs to run once daily at random times
 su gvm -c "touch /opt/gvm/cron.sh"
@@ -330,8 +306,6 @@ sudo -Hiu gvm echo "/opt/gvm/bin/gvm-manage-certs -a" | sudo -Hiu gvm tee -a /op
 su gvm -c "/opt/gvm/cron.sh"
 su gvm -c "rm /opt/gvm/cron.sh"
 
-# step 10 below
-
 # Build and Install OSPd and OSPd-OpenVAS
 su gvm -c "touch /opt/gvm/ospd.sh"
 su gvm -c "chmod u+x /opt/gvm/ospd.sh"
@@ -342,24 +316,11 @@ sudo -Hiu gvm echo "export PKG_CONFIG_PATH=/opt/gvm/lib/pkgconfig:$PKG_CONFIG_PA
 # Debian needs the below to be 'python3.7' while Ubuntu 'python3.8'
 
 # going to just get the python3 version number and use it here. That should be better than trying
-# to account for the differences with the release ID
+# to account for the differences with the release ID. This'll be repeated multiple times.
 
 PY3VER=`python3 --version | grep -o [0-9]\.[0-9]`
 sudo -Hiu gvm echo "mkdir -p /opt/gvm/lib/python$PY3VER/site-packages/" | sudo -Hiu gvm tee -a /opt/gvm/ospd.sh
 sudo -Hiu gvm echo "export PYTHONPATH=/opt/gvm/lib/python$PY3VER/site-packages" | sudo -Hiu gvm tee -a /opt/gvm/ospd.sh
-
-
-#ID=`grep ^ID= /etc/os-release | sed 's/ID=//g'`
-#if [ $ID = "debian" ]; then
-#    sudo -Hiu gvm echo "mkdir -p /opt/gvm/lib/python3.7/site-packages/" | sudo -Hiu gvm tee -a /opt/gvm/ospd.sh
-#    sudo -Hiu gvm echo "export PYTHONPATH=/opt/gvm/lib/python3.7/site-packages" | sudo -Hiu gvm tee -a /opt/gvm/ospd.sh
-#elif [ $ID = "kali" ]; then
-#    sudo -Hiu gvm echo "mkdir -p /opt/gvm/lib/python3.9/site-packages/" | sudo -Hiu gvm tee -a /opt/gvm/ospd.sh
-#    sudo -Hiu gvm echo "export PYTHONPATH=/opt/gvm/lib/python3.9/site-packages" | sudo -Hiu gvm tee -a /opt/gvm/ospd.sh
-#else
-#    sudo -Hiu gvm echo "mkdir -p /opt/gvm/lib/python3.8/site-packages/" | sudo -Hiu gvm tee -a /opt/gvm/ospd.sh
-#    sudo -Hiu gvm echo "export PYTHONPATH=/opt/gvm/lib/python3.8/site-packages" | sudo -Hiu gvm tee -a /opt/gvm/ospd.sh
-#fi
 sudo -Hiu gvm echo "cd /tmp/gvm-source/ospd" | sudo -Hiu gvm tee -a /opt/gvm/ospd.sh
 sudo -Hiu gvm echo "python3 setup.py install --prefix=/opt/gvm" | sudo -Hiu gvm tee -a /opt/gvm/ospd.sh
 sudo -Hiu gvm echo "cd ../ospd-openvas" | sudo -Hiu gvm tee -a /opt/gvm/ospd.sh
@@ -367,8 +328,6 @@ sudo -Hiu gvm echo "python3 setup.py install --prefix=/opt/gvm" | sudo -Hiu gvm 
 
 su gvm -c "/opt/gvm/ospd.sh"
 su gvm -c "rm /opt/gvm/ospd.sh"
-
-# step 11 below
 
 # Start OpenVAS Scanner, GSA and GVM services
 # Start OpenVAS
@@ -401,16 +360,11 @@ sudo -Hiu gvm echo "/opt/gvm/sbin/gvmd --osp-vt-update=/opt/gvm/var/run/ospd.soc
 # Start GSA
 sudo -Hiu gvm echo "sudo /opt/gvm/sbin/gsad" | sudo -Hiu gvm tee -a /opt/gvm/start.sh
 
-# Check the status
-#sudo -Hiu gvm echo "ps aux | grep -E \"ospd-openvas|gsad|gvmd\" | grep -v grep" | sudo -Hiu gvm tee -a /opt/gvm/.bashrc
-
 # Wait a moment for the above to start up
 sudo -Hiu gvm echo "sleep 10" | sudo -Hiu gvm tee -a /opt/gvm/start.sh
 
 su gvm -c "/opt/gvm/start.sh"
 su gvm -c "rm /opt/gvm/start.sh"
-
-# step 12 below
 
 # Create GVM Scanner
 su gvm -c "touch /opt/gvm/scan.sh"
@@ -441,14 +395,6 @@ su gvm -c "rm /opt/gvm/scan.sh"
 # all the full paths above you could put "export PATH=$PATH:/opt/gvm/bin:/opt/gvm/sbin" at 
 # the start of the above scripts. Not sure which is a better solution.
 
-# Leave gvm environment and clean up
-#sudo -Hiu gvm echo "exit" | sudo -Hiu gvm tee -a /opt/gvm/.bashrc
-#su gvm
-# Debugging
-#sudo -Hiu gvm mv /opt/gvm/.bashrc /opt/gvm/just-ran-bashrc.txt
-#sudo -Hiu gvm rm /opt/gvm/.bashrc
-#sudo -Hiu gvm mv /opt/gvm/.bashrc.bak /opt/gvm/.bashrc
-
 # Set firewall to allow access on port 443 and 22
 ufw allow 443
 ufw allow 22
@@ -469,7 +415,6 @@ echo "Environment=PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/
 
 PY3VER=`python3 --version | grep -o [0-9]\.[0-9]`
 echo "Environment=PYTHONPATH=/opt/gvm/lib/python$PY3VER/site-packages" >> /etc/systemd/system/openvas.service
-
 
 echo -e "ExecStart=/usr/bin/python3 /opt/gvm/bin/ospd-openvas --pid-file /opt/gvm/var/run/ospd-openvas.pid --log-file /opt/gvm/var/log/gvm/ospd-openvas.log --lock-file-dir /opt/gvm/var/run -u /opt/gvm/var/run/ospd.sock" >> /etc/systemd/system/openvas.service
 echo "RemainAfterExit=yes" >> /etc/systemd/system/openvas.service
