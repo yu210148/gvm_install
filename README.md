@@ -11,6 +11,7 @@ sudo ./install_gvm.sh
 ```
 
 Debian:
+* Note, I had an issue when testing GVM version 20 on Debian where nmap wasn't detected. I don't have a resolution for this at the moment so if you select version 20 on Debian stable you may run into issues. If you have any idea how to fix this please let me know. 
 ```
 apt install sudo
 wget https://raw.githubusercontent.com/yu210148/gvm_install/master/install_gvm.sh
@@ -18,6 +19,7 @@ chmod +x install_gvm.sh
 sudo -i
 ./install_gvm.sh
 ```
+
 When the script completes if everything went well the web interface should be available on the machine you ran this on. 
 Locate the IP address `ip a` is one way to do that. Then, point a web browser to https://<ip-address-of-machine> where <ip-address-of-machine>
 is the actual address.
