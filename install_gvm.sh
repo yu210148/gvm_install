@@ -232,7 +232,7 @@ sudo -Hiu gvm echo "echo More info can be found by searching greenbone-nvt-sync 
 sudo -Hiu gvm echo "sleep 300" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh # allow a NAT connection to close
 if [ $GVMVERSION = "11" ]; then
     sudo -Hiu gvm echo "sed -i '368isleep 120' /opt/gvm/sbin/greenbone-scapdata-sync" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
-elif [ $GVMVERSION = "20" ]; then
+#elif [ $GVMVERSION = "20" ]; then
     # This makes no sense. TODO: Line 368 in gvm 11 does not equal line 386 in gvm 20 so where's the right place to put this sleep command?
     #sudo -Hiu gvm echo "sed -i '368isleep 120' /opt/gvm/sbin/greenbone-feed-sync --type SCAP" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
 fi
