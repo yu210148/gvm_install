@@ -15,16 +15,6 @@
 # Licensed under GPLv3 or later
 ######################################################################
 
-######################################################################
-# While this does complete for version 20 I've not been able to 
-# get version 20 into a state workable enough to complete a scan.
-# On Debian 10 it seems unable to locate nmap successfully. On
-# Ubuntu 20.04 it complains about missing scan configs. 
-# Specifically, the full and fast scan config seems to be missing.
-# So, I'm going to comment out the below and force GVM version 11. 
-# If anyone wants to pick this up uncomment the read and validate input
-# sections below and comment out the GVMVERSION=11 line.
-######################################################################
 read -p "Would you like to install version 11 or 20? " GVMVERSION
 
  validate input
@@ -503,6 +493,16 @@ systemctl enable --now gsa.{path,service}
 echo "The installation is done, but there may still be an update in progress."
 echo "Please be patient if you aren't able to log in at first."
 echo "You may also need to restart"
+if [ $GVMVERSION = "20" ]; then
+    echo ""
+    echo "I've had some trouble with version 20 when testing"
+    echo "If you're unable to log in to the web interface try restarting"
+    echo "and running all of the update commands in the gvm user's crontab"
+    echo "sudo su gvm -c \"crontab -l\""
+    echo "and ensure they complete successfully. Alternatively, leave the machine running"
+    echo "for 24 hours and let cron handle it."
+    echo ""
+fi
 echo "Username is gvmadmin and pasword is StrongPass"
 echo "Remember to change this default password"
 echo "sudo -Hiu gvm gvmd --user=gvmadmin --new-password=<PASSWORD>"
