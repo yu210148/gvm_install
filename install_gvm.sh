@@ -248,7 +248,7 @@ sudo -Hiu gvm echo "sleep 300" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh # allow a
 if [ $GVMVERSION = "11" ]; then
     sudo -Hiu gvm echo "sed -i '349isleep 300' /opt/gvm/sbin/greenbone-certdata-sync" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
     ######sudo -Hiu gvm echo "/opt/gvm/sbin/greenbone-certdata-sync" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
-elif [ $GVMVERSION = "20" ]; then
+#elif [ $GVMVERSION = "20" ]; then
     # according to the reporter in Issue12 this is what's needed however, it seems unlikely to me that inserting the sleep statement into line 349 of
     # /opt/gvm/greenbone-feed-sync is the same as inserting it into line 349 of greenbone-certdata-sync in version 11
     # same goes for the sed statement above.
