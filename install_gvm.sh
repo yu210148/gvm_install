@@ -15,9 +15,19 @@
 # Licensed under GPLv3 or later
 ######################################################################
 
+######################################################################
+# While this does complete for version 20 I've not been able to 
+# get version 20 into a state workable enough to complete a scan.
+# On Debian 10 it seems unable to locate nmap successfully. On
+# Ubuntu 20.04 it complains about missing scan configs. 
+# Specifically, the full and fast scan config seems to be missing.
+# So, I'm going to comment out the below and force GVM version 11. 
+# If anyone wants to pick this up uncomment the read and validate input
+# sections below and comment out the GVMVERSION=11 line.
+######################################################################
 read -p "Would you like to install version 11 or 20? " GVMVERSION
 
-# validate input
+ validate input
 if [[ $GVMVERSION = "11" ]] || [[ $GVMVERSION = "20" ]]; then
     echo "Okay, installing version $GVMVERSION"
 else 
@@ -25,6 +35,8 @@ else
     echo "Please re-run install_gvm.sh and enter a version number at the prompt"
     exit 1
 fi
+
+#GVMVERSION='11'
 
 apt-get update
 apt-get upgrade
@@ -184,7 +196,7 @@ sudo -Hiu gvm touch /opt/gvm/.bashrc
 su gvm -c "sed -i '364isleep 300' /opt/gvm/bin/greenbone-nvt-sync"
 su gvm -c "sed -i '364iecho Sleeping for 5 minutes' /opt/gvm/bin/greenbone-nvt-sync"
 su gvm -c 'echo "More info can be found by searching greenbone-nvt-sync rsync connection refused on Google"'
-######su gvm -c /opt/gvm/bin/greenbone-nvt-sync
+su gvm -c /opt/gvm/bin/greenbone-nvt-sync
 /opt/gvm/sbin/openvas --update-vt-info
 
 # Build and Install Greenbone Vulnerability Manager
@@ -239,7 +251,13 @@ fi
 
 sudo -Hiu gvm echo "echo Sleeping 2 minutes" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
 sudo -Hiu gvm echo "echo More info can be found by searching greenbone-nvt-sync rsync connection refused on Google" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
-######sudo -Hiu gvm echo "/opt/gvm/sbin/greenbone-scapdata-sync" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
+
+if [ $GVMVERSION = "11" ]; then
+    sudo -Hiu gvm echo "/opt/gvm/sbin/greenbone-scapdata-sync" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
+elif [ $GVMVERSION = "20" ]; then
+    sudo -Hiu gvm echo "/opt/gvm/sbin/greenbone-feed-sync --type SCAP" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
+fi
+
 sudo -Hiu gvm echo "echo Sleeping 5 minutes" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
 sudo -Hiu gvm echo "echo More info can be found by searching greenbone-nvt-sync rsync connection refused on Google" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
 sudo -Hiu gvm echo "sleep 300" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh # allow a NAT connection to close
@@ -247,13 +265,13 @@ sudo -Hiu gvm echo "sleep 300" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh # allow a
 # Add sleep to future greenbone-certdata-sync calls (https://github.com/yu210148/gvm_install/issues/2 --Thanks kirk56k)
 if [ $GVMVERSION = "11" ]; then
     sudo -Hiu gvm echo "sed -i '349isleep 300' /opt/gvm/sbin/greenbone-certdata-sync" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
-    ######sudo -Hiu gvm echo "/opt/gvm/sbin/greenbone-certdata-sync" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
+    sudo -Hiu gvm echo "/opt/gvm/sbin/greenbone-certdata-sync" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
 #elif [ $GVMVERSION = "20" ]; then
     # according to the reporter in Issue12 this is what's needed however, it seems unlikely to me that inserting the sleep statement into line 349 of
     # /opt/gvm/greenbone-feed-sync is the same as inserting it into line 349 of greenbone-certdata-sync in version 11
     # same goes for the sed statement above.
     #sudo -Hiu gvm echo "sed -i '349isleep 300' /opt/gvm/sbin/greenbone-feed-sync --type CERT" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
-    ######sudo -Hiu gvm echo "/opt/gvm/sbin/greenbone-feed-sync --type GVMD_DATA" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
+    sudo -Hiu gvm echo "/opt/gvm/sbin/greenbone-feed-sync --type GVMD_DATA" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
 fi
 
 su gvm -c "/opt/gvm/feed.sh"
