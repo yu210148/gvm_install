@@ -1,5 +1,5 @@
 # gvm_install
-A script to install GVM / OpenVAS 11 on Ubuntu 20.04
+A script to install GVM / OpenVAS 11 or 20 on Ubuntu 20.04
 
 Usage:
 
