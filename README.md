@@ -27,6 +27,10 @@ is the actual address.
 
 It uses a self-signed certificate so you'll see a warning in the web browser about that. Feel free to replace the cert or ignore the warning.
 
+**********
+Seems, that after completing the script for version 20 the machine needs to be restarted. Then you should be able to log into the web interface. Once logged in, head over to Administration-->Feed Status. If any of the feeds show a status of 'Update in progress' wait until they're completed. While you're waiting, log in to a command prompt on the machine and become the GVM user (e.g., sudo -i, su gvm). List the gvm user's crontab file with 'crontab -l' and manually execute the commands shown there (e.g., '/opt/gvm/sbin/greenbone-feed-sync --type SCAP') once the feed status changes from 'Update in progress' to the feed's actual status. When you run the commands from the crontab the feed status update as shown in the web interface will change back to show that it's updating. Again, wait for it to complete before running the next line from the crontab. Once all the feeds are showing versions that look like dates (e.g., 20201229T1131) and the status is no longer showing as updating you should be able to start a scan using the 'Created OpenVAS Scanner' under Scans-->Tasks-->New Task.
+*********
+
 Based on [koromicha's excellent guide](https://kifarunix.com/install-and-setup-gvm-11-on-ubuntu-20-04/). Thanks to the commenters there as well for useful troubleshooting info.
 
 Takes a while to do everything (a couple of hours on my last test).
