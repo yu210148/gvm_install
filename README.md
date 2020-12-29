@@ -14,6 +14,7 @@ Debian:
 * Note, I had an issue when testing GVM version 20 on Debian where nmap wasn't detected. I don't have a resolution for this at the moment so if you select version 20 on Debian stable you may run into issues. If you have any idea how to fix this please let me know. 
 ```
 apt install sudo
+usermod -aG sudo <your-user-name> # add your user to the sudoer's group
 wget https://raw.githubusercontent.com/yu210148/gvm_install/master/install_gvm.sh
 chmod +x install_gvm.sh
 sudo -i
