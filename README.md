@@ -35,8 +35,6 @@ Based on [koromicha's excellent guide](https://kifarunix.com/install-and-setup-g
 
 Takes a while to do everything (a couple of hours on my last test).
 
-When creating a task be sure to select the "Created OpenVAS Scanner" from the drop-down.
-
 Tested successfully in VMs in December of 2020. Your experience may be different. Use at your own risk.
 
 
