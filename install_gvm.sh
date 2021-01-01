@@ -38,6 +38,11 @@ curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
 echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
 apt-get update
 apt-get -y install yarn
+
+# addresses issue #7 on GH
+/usr/bin/yarn install
+/usr/bin/yarn upgrade
+
 apt-get -y install postgresql postgresql-contrib postgresql-server-dev-all
 systemctl restart postgresql
 sudo -Hiu postgres createuser gvm
