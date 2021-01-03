@@ -22,7 +22,7 @@ sudo -i
 ```
 
 When the script completes if everything went well the web interface should be available on the machine you ran this on. 
-Locate the IP address `ip a` is one way to do that. Then, point a web browser to https://<ip-address-of-machine> where <ip-address-of-machine>
+Locate the IP address `ip a` is one way to do that. Then, point a web browser to `https://<ip-address-of-machine>` where `<ip-address-of-machine>`
 is the actual address.
 
 It uses a self-signed certificate so you'll see a warning in the web browser about that. Feel free to replace the cert or ignore the warning.
