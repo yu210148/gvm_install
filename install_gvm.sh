@@ -29,7 +29,7 @@ fi
 #GVMVERSION='11'
 
 apt-get update
-apt-get upgrade
+apt-get upgrade -y 
 useradd -r -d /opt/gvm -c "GVM (OpenVAS) User" -s /bin/bash gvm
 mkdir /opt/gvm
 chown gvm:gvm /opt/gvm
