@@ -17,7 +17,7 @@
 
 read -p "Would you like to install version 11 or 20? " GVMVERSION
 
- validate input
+#validate input
 if [[ $GVMVERSION = "11" ]] || [[ $GVMVERSION = "20" ]]; then
     echo "Okay, installing version $GVMVERSION"
 else 
