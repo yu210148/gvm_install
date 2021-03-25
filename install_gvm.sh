@@ -192,10 +192,8 @@ sudo -Hiu gvm touch /opt/gvm/.bashrc
 su gvm -c "sed -i '364isleep 300' /opt/gvm/bin/greenbone-nvt-sync"
 su gvm -c "sed -i '364iecho Sleeping for 5 minutes' /opt/gvm/bin/greenbone-nvt-sync"
 su gvm -c 'echo "More info can be found by searching greenbone-nvt-sync rsync connection refused on Google"'
-#debug
-# disabling update temporaraly for testing
-#su gvm -c /opt/gvm/bin/greenbone-nvt-sync
-#/opt/gvm/sbin/openvas --update-vt-info
+su gvm -c /opt/gvm/bin/greenbone-nvt-sync
+/opt/gvm/sbin/openvas --update-vt-info
 
 # Build and Install Greenbone Vulnerability Manager
 su gvm -c "touch /opt/gvm/gvm_build.sh"
@@ -273,9 +271,7 @@ if [ $GVMVERSION = "11" ]; then
 fi
 
 su gvm -c "/opt/gvm/feed.sh"
-#debug
-# disabling update temporaraly for testing
-#su gvm -c "rm /opt/gvm/feed.sh"
+su gvm -c "rm /opt/gvm/feed.sh"
 
 # Set cron jobs to run once daily at random times
 su gvm -c "touch /opt/gvm/cron.sh"
