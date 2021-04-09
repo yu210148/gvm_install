@@ -15,18 +15,19 @@
 # Licensed under GPLv3 or later
 ######################################################################
 
-read -p "Would you like to install version 11 or 20? " GVMVERSION
+## Version 11 is EOL so it shouldn't be an option here any longer. See also Github issue33
+#read -p "Would you like to install version 11 or 20? " GVMVERSION
 
-#validate input
-if [[ $GVMVERSION = "11" ]] || [[ $GVMVERSION = "20" ]]; then
-    echo "Okay, installing version $GVMVERSION"
-else 
-    echo "Sorry, I didn't understand the input $GVMVERSION."
-    echo "Please re-run install_gvm.sh and enter a version number at the prompt"
-    exit 1
-fi
+##validate input
+#if [[ $GVMVERSION = "11" ]] || [[ $GVMVERSION = "20" ]]; then
+#    echo "Okay, installing version $GVMVERSION"
+#else 
+#    echo "Sorry, I didn't understand the input $GVMVERSION."
+#    echo "Please re-run install_gvm.sh and enter a version number at the prompt"
+#    exit 1
+#fi
 
-#GVMVERSION='11'
+GVMVERSION='20'
 
 apt-get update
 apt-get upgrade -y 
