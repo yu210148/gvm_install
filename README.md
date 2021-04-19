@@ -28,7 +28,19 @@ is the actual address.
 It uses a self-signed certificate so you'll see a warning in the web browser about that. Feel free to replace the cert or ignore the warning.
 
 **********
-Seems, that after completing the script for version 20 the machine needs to be restarted. Then you should be able to log into the web interface. Once logged in, head over to Administration-->Feed Status. If any of the feeds show a status of 'Update in progress' wait until they're completed. While you're waiting, log in to a command prompt on the machine and become the GVM user (e.g., sudo -i, su gvm). List the gvm user's crontab file with 'crontab -l' and manually execute the commands shown there (e.g., '/opt/gvm/sbin/greenbone-feed-sync --type SCAP') once the feed status changes from 'Update in progress' to the feed's actual status. When you run the commands from the crontab the feed status update as shown in the web interface will change back to show that it's updating. Again, wait for it to complete before running the next line from the crontab. Once all the feeds are showing versions that look like dates (e.g., 20201229T1131) and the status is no longer showing as updating you should be able to start a scan using the OpenVAS Scanner under Scans-->Tasks-->New Task.
+# Post Installation Steps
+1) Seems, that after completing the script for version 20 the machine needs to be restarted. 
+2) Then you should be able to log into the web interface. 
+3) Once logged in, head over to Administration-->Feed Status. 
+
+If any of the feeds show a status of 'Update in progress' wait until they're completed. 
+
+# Steps 4-7 will take a very long time (expect up to 24 hours)
+
+4) While you're waiting, log in to a command prompt on the machine and become the GVM user (e.g., sudo -i, su gvm). 
+5) List the gvm user's crontab file with 'crontab -l' and manually execute the commands shown there (e.g., '/opt/gvm/sbin/greenbone-feed-sync --type SCAP') once the feed status changes from 'Update in progress' to the feed's actual status.
+6) When you run the commands from the crontab the feed status update as shown in the web interface will change back to show that it's updating. Again, wait for it to complete before running the next line from the crontab. 
+7) Once all the feeds are showing versions that look like dates (e.g., 20201229T1131) and the status is no longer showing as updating you should be able to start a scan using the OpenVAS Scanner under Scans-->Tasks-->New Task.
 *********
 
 Depending on how your network is set up--specifically, with regards to IPv4 and IPv6--you may run into issues accessing the web interface. See <a href=https://github.com/yu210148/gvm_install/issues/7>Issue #7</a> for more info. 
