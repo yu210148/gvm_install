@@ -45,7 +45,7 @@ If any of the feeds show a status of 'Update in progress' wait until they're com
       d) /opt/gvm/bin/greenbone-nvt-sync<br/>
       e) /opt/gvm/sbin/greenbone-feed-sync --type CERT<br/>
       f) /opt/gvm/sbin/greenbone-feed-sync --type GVMD_DATA<br/>
-      g) /usr/gin/sudo /opt/gvm/sbin/openvas --update-vt-info<br/>
+      g) /usr/bin/sudo /opt/gvm/sbin/openvas --update-vt-info<br/>
 
 7) To check the status of each command above go to https://localhost from the server, login with the user credentials (likely gvmadmin and StrongPass), go to Administration, Feed Status. 
 
