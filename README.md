@@ -35,12 +35,24 @@ It uses a self-signed certificate so you'll see a warning in the web browser abo
 
 If any of the feeds show a status of 'Update in progress' wait until they're completed. 
 
-# Steps 4-7 will take a very long time (expect up to 24 hours)
+## Steps 4-7 will take a very long time (expect up to 24 hours)
 
-4) While you're waiting, log in to a command prompt on the machine and become the GVM user (e.g., sudo -i, su gvm). 
-5) List the gvm user's crontab file with 'crontab -l' and manually execute the commands shown there (e.g., '/opt/gvm/sbin/greenbone-feed-sync --type SCAP') once the feed status changes from 'Update in progress' to the feed's actual status.
-6) When you run the commands from the crontab the feed status update as shown in the web interface will change back to show that it's updating. Again, wait for it to complete before running the next line from the crontab. 
-7) Once all the feeds are showing versions that look like dates (e.g., 20201229T1131) and the status is no longer showing as updating you should be able to start a scan using the OpenVAS Scanner under Scans-->Tasks-->New Task.
+4) Run the below to force an update of the data within Greenbone Security Assistant
+
+      a) On Ubuntu 20.04, sudo -i<br/>
+      b) su gvm<br/>
+      c) /opt/gvm/sbin/greenbone-feed-sync --type SCAP<br/>
+      d) /opt/gvm/bin/greenbone-nvt-sync<br/>
+      e) /opt/gvm/sbin/greenbone-feed-sync --type CERT<br/>
+      f) /opt/gvm/sbin/greenbone-feed-sync --type GVMD_DATA<br/>
+      g) /usr/gin/sudo /opt/gvm/sbin/openvas --update-vt-info<br/>
+
+7) To check the status of each command above go to https://localhost from the server, login with the user credentials (likely gvmadmin and StrongPass), go to Administration, Feed Status. 
+
+Sample of Updating Status
+![VirtualBoxVM_6q0KvUTfOU](https://user-images.githubusercontent.com/14837699/115396919-83f4ab80-a1b3-11eb-9383-e345d59eaebd.png)
+
+9) Once all the feeds are showing versions that look like dates (e.g., 20201229T1131 or "Current") and the status is no longer showing as updating you should be able to start a scan using the OpenVAS Scanner under Scans-->Tasks-->New Task.
 *********
 
 Depending on how your network is set up--specifically, with regards to IPv4 and IPv6--you may run into issues accessing the web interface. See <a href=https://github.com/yu210148/gvm_install/issues/7>Issue #7</a> for more info. 
@@ -50,7 +62,5 @@ Based on [koromicha's excellent guide](https://kifarunix.com/install-and-setup-g
 Takes a while to do everything (a couple of hours on my last test).
 
 Tested successfully in VMs in December of 2020. Your experience may be different. Use at your own risk.
-
-
 
 Licensed under GPLv3 or later.
