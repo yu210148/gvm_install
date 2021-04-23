@@ -63,4 +63,13 @@ Takes a while to do everything (a couple of hours on my last test).
 
 Tested successfully in VMs in December of 2020. Your experience may be different. Use at your own risk.
 
+If you have openvas 20.08 and you upgrade to 21.04, there is a bug int the database version. You need to modify your database before upgrade. Cf: https://github.com/greenbone/gvmd/issues/1497
+```
+su - postgres
+psql gvmd
+CREATE TABLE IF NOT EXISTS vt_severities (id SERIAL PRIMARY KEY,vt_oid text NOT NULL,type text NOT NULL, origin text,date integer,score double precision,value text); 
+SELECT create_index ('vt_severities_by_vt_oid','vt_severities', 'vt_oid'); 
+ALTER TABLE vt_severities OWNER TO gvm;
+```
+
 Licensed under GPLv3 or later.
