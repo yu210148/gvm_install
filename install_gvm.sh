@@ -78,25 +78,25 @@ cd /tmp/gvm-source
 #    sudo -Hiu gvm git clone -b gvmd-9.0 https://github.com/greenbone/gvmd.git
 #    sudo -Hiu gvm git clone -b gsa-9.0 https://github.com/greenbone/gsa.git
 if [ $GVMVERSION = "20" ]; then
-    sudo -Hiu gvm git clone -b gvm-libs-20.08 https://github.com/greenbone/gvm-libs.git
+    sudo -Hiu gvm git clone -b v20.8.1 https://github.com/greenbone/gvm-libs.git
     sudo -Hiu gvm git clone https://github.com/greenbone/openvas-smb.git
-    sudo -Hiu gvm git clone -b openvas-20.08 https://github.com/greenbone/openvas.git
-    sudo -Hiu gvm git clone -b ospd-20.08 https://github.com/greenbone/ospd.git
-    sudo -Hiu gvm git clone -b ospd-openvas-20.08 https://github.com/greenbone/ospd-openvas.git
-    sudo -Hiu gvm git clone -b gvmd-20.08 https://github.com/greenbone/gvmd.git
-    sudo -Hiu gvm git clone -b gsa-20.08 https://github.com/greenbone/gsa.git
+    sudo -Hiu gvm git clone -b v20.8.1 https://github.com/greenbone/openvas.git
+    sudo -Hiu gvm git clone -b v20.8.1 https://github.com/greenbone/ospd.git
+    sudo -Hiu gvm git clone -b v20.8.1 https://github.com/greenbone/ospd-openvas.git
+    sudo -Hiu gvm git clone -b v20.8.1 https://github.com/greenbone/gvmd.git
+    sudo -Hiu gvm git clone -b v20.8.1 https://github.com/greenbone/gsa.git
     sudo -Hiu gvm git clone https://github.com/greenbone/python-gvm.git
     sudo -Hiu gvm git clone https://github.com/greenbone/gvm-tools.git
 elif [ $GVMVERSION = "21" ]; then
-    sudo -Hiu gvm git clone -b gvm-libs-21.04 https://github.com/greenbone/gvm-libs.git
-    sudo -Hiu gvm git clone https://github.com/greenbone/openvas-smb.git
-    sudo -Hiu gvm git clone -b openvas-21.04 https://github.com/greenbone/openvas.git
-    sudo -Hiu gvm git clone -b ospd-21.04 https://github.com/greenbone/ospd.git
-    sudo -Hiu gvm git clone -b ospd-openvas-21.04 https://github.com/greenbone/ospd-openvas.git
-    sudo -Hiu gvm git clone -b gvmd-21.04 https://github.com/greenbone/gvmd.git
-    sudo -Hiu gvm git clone -b gsa-21.04 https://github.com/greenbone/gsa.git
-    sudo -Hiu gvm git clone https://github.com/greenbone/python-gvm.git
-    sudo -Hiu gvm git clone https://github.com/greenbone/gvm-tools.git
+    sudo -Hiu gvm git clone -b v21.4.0 https://github.com/greenbone/gvm-libs.git
+    sudo -Hiu gvm git clone -b v21.4.0 https://github.com/greenbone/openvas-smb.git
+    sudo -Hiu gvm git clone -b v21.4.0 https://github.com/greenbone/openvas.git
+    sudo -Hiu gvm git clone -b v21.4.0 https://github.com/greenbone/ospd.git
+    sudo -Hiu gvm git clone -b v21.4.0 https://github.com/greenbone/ospd-openvas.git
+    sudo -Hiu gvm git clone -b v21.4.0 https://github.com/greenbone/gvmd.git
+    sudo -Hiu gvm git clone -b v21.4.0 https://github.com/greenbone/gsa.git
+    sudo -Hiu gvm git clone -b v21.1.3 https://github.com/greenbone/python-gvm.git
+    sudo -Hiu gvm git clone -b v21.1.0 https://github.com/greenbone/gvm-tools.git
 fi
 
 sudo -Hiu gvm cp --recursive /opt/gvm/* /tmp/gvm-source/
