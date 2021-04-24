@@ -16,10 +16,10 @@
 ######################################################################
 
 ## Version 11 is EOL so it shouldn't be an option here any longer. See also Github issue33
-#read -p "Would you like to install version 11 or 20? " GVMVERSION
+#read -p "Would you like to install version 20 or 21? " GVMVERSION
 
-##validate input
-#if [[ $GVMVERSION = "11" ]] || [[ $GVMVERSION = "20" ]]; then
+#validate input
+#if [[ $GVMVERSION = "21" ]] || [[ $GVMVERSION = "20" ]]; then
 #    echo "Okay, installing version $GVMVERSION"
 #else 
 #    echo "Sorry, I didn't understand the input $GVMVERSION."
@@ -34,7 +34,7 @@ apt-get upgrade -y
 useradd -r -d /opt/gvm -c "GVM (OpenVAS) User" -s /bin/bash gvm
 mkdir /opt/gvm
 chown gvm:gvm /opt/gvm
-apt-get -y install gcc g++ make bison flex libksba-dev curl redis libpcap-dev cmake git pkg-config libglib2.0-dev libgpgme-dev libgnutls28-dev uuid-dev libssh-gcrypt-dev libldap2-dev gnutls-bin libmicrohttpd-dev libhiredis-dev zlib1g-dev libxml2-dev libradcli-dev clang-format libldap2-dev doxygen nmap gcc-mingw-w64 xml-twig-tools libical-dev perl-base heimdal-dev libpopt-dev libsnmp-dev python3-setuptools python3-paramiko python3-lxml python3-defusedxml python3-dev gettext python3-polib xmltoman python3-pip texlive-fonts-recommended xsltproc texlive-latex-extra rsync ufw ntp libunistring-dev git --no-install-recommends
+apt-get -y install gcc g++ make bison flex libksba-dev curl redis libpcap-dev cmake git pkg-config libglib2.0-dev libgpgme-dev libgnutls28-dev uuid-dev libssh-gcrypt-dev libldap2-dev gnutls-bin libmicrohttpd-dev libhiredis-dev zlib1g-dev libxml2-dev libradcli-dev clang-format libldap2-dev doxygen nmap gcc-mingw-w64 xml-twig-tools libical-dev perl-base heimdal-dev libpopt-dev libsnmp-dev python3-setuptools python3-paramiko python3-lxml python3-defusedxml python3-dev gettext python3-polib xmltoman python3-pip texlive-fonts-recommended xsltproc texlive-latex-extra rsync ufw ntp libunistring-dev git libnet1-dev --no-install-recommends
 curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
 echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
 apt-get update
@@ -68,16 +68,16 @@ echo "/opt/gvm/lib" > /etc/ld.so.conf.d/gvm.conf
 sudo -Hiu gvm mkdir /tmp/gvm-source
 cd /tmp/gvm-source
 
-if [ $GVMVERSION = "11" ]; then
+#if [ $GVMVERSION = "11" ]; then
     # if installing GVM ver. 11 
-    sudo -Hiu gvm git clone -b gvm-libs-11.0 https://github.com/greenbone/gvm-libs.git
-    sudo -Hiu gvm git clone https://github.com/greenbone/openvas-smb.git
-    sudo -Hiu gvm git clone -b openvas-7.0 https://github.com/greenbone/openvas.git
-    sudo -Hiu gvm git clone -b ospd-2.0 https://github.com/greenbone/ospd.git
-    sudo -Hiu gvm git clone -b ospd-openvas-1.0 https://github.com/greenbone/ospd-openvas.git
-    sudo -Hiu gvm git clone -b gvmd-9.0 https://github.com/greenbone/gvmd.git
-    sudo -Hiu gvm git clone -b gsa-9.0 https://github.com/greenbone/gsa.git
-elif [ $GVMVERSION = "20" ]; then
+#    sudo -Hiu gvm git clone -b gvm-libs-11.0 https://github.com/greenbone/gvm-libs.git
+#    sudo -Hiu gvm git clone https://github.com/greenbone/openvas-smb.git
+#    sudo -Hiu gvm git clone -b openvas-7.0 https://github.com/greenbone/openvas.git
+#    sudo -Hiu gvm git clone -b ospd-2.0 https://github.com/greenbone/ospd.git
+#    sudo -Hiu gvm git clone -b ospd-openvas-1.0 https://github.com/greenbone/ospd-openvas.git
+#    sudo -Hiu gvm git clone -b gvmd-9.0 https://github.com/greenbone/gvmd.git
+#    sudo -Hiu gvm git clone -b gsa-9.0 https://github.com/greenbone/gsa.git
+if [ $GVMVERSION = "20" ]; then
     sudo -Hiu gvm git clone -b gvm-libs-20.08 https://github.com/greenbone/gvm-libs.git
     sudo -Hiu gvm git clone https://github.com/greenbone/openvas-smb.git
     sudo -Hiu gvm git clone -b openvas-20.08 https://github.com/greenbone/openvas.git
@@ -85,6 +85,16 @@ elif [ $GVMVERSION = "20" ]; then
     sudo -Hiu gvm git clone -b ospd-openvas-20.08 https://github.com/greenbone/ospd-openvas.git
     sudo -Hiu gvm git clone -b gvmd-20.08 https://github.com/greenbone/gvmd.git
     sudo -Hiu gvm git clone -b gsa-20.08 https://github.com/greenbone/gsa.git
+    sudo -Hiu gvm git clone https://github.com/greenbone/python-gvm.git
+    sudo -Hiu gvm git clone https://github.com/greenbone/gvm-tools.git
+elif [ $GVMVERSION = "21" ]; then
+    sudo -Hiu gvm git clone -b gvm-libs-21.04 https://github.com/greenbone/gvm-libs.git
+    sudo -Hiu gvm git clone https://github.com/greenbone/openvas-smb.git
+    sudo -Hiu gvm git clone -b openvas-21.04 https://github.com/greenbone/openvas.git
+    sudo -Hiu gvm git clone -b ospd-21.04 https://github.com/greenbone/ospd.git
+    sudo -Hiu gvm git clone -b ospd-openvas-21.04 https://github.com/greenbone/ospd-openvas.git
+    sudo -Hiu gvm git clone -b gvmd-21.04 https://github.com/greenbone/gvmd.git
+    sudo -Hiu gvm git clone -b gsa-21.04 https://github.com/greenbone/gsa.git
     sudo -Hiu gvm git clone https://github.com/greenbone/python-gvm.git
     sudo -Hiu gvm git clone https://github.com/greenbone/gvm-tools.git
 fi
