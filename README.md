@@ -63,7 +63,7 @@ Takes a while to do everything (a couple of hours on my last test).
 
 Tested successfully in VMs in December of 2020. Your experience may be different. Use at your own risk.
 
-If you have openvas 20.08 and you upgrade to 21.04, there is a bug int the database version. You need to modify your database before upgrade. Cf: https://github.com/greenbone/gvmd/issues/1497
+If you have openvas 20.08 and you upgrade to 21.04, there is a bug in the database version. You need to modify your database before upgrade. Cf: https://github.com/greenbone/gvmd/issues/1497
 ```
 su - postgres
 psql gvmd
