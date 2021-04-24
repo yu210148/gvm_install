@@ -110,7 +110,7 @@ if [[ $ID = "debian" ]] || [[ $ID = "kali" ]]; then
 fi
 
 #debug break here
-exit 1
+#exit 1
 
 sudo -Hiu gvm touch /opt/gvm/.bashrc
 sudo -Hiu gvm mv /opt/gvm/.bashrc /opt/gvm/.bashrc.bak # save original bashrc file 
@@ -191,6 +191,9 @@ fi
 
 echo "gvm ALL = NOPASSWD: /opt/gvm/sbin/gsad" >> /etc/sudoers.d/gvm
 
+# debug we seem to be good up to here
+#exit 1
+
 #Update OpenVAS NVTs
 sudo -Hiu gvm touch /opt/gvm/.bashrc
 sudo -Hiu gvm mv /opt/gvm/.bashrc /opt/gvm/.bashrc.bak # save original bashrc file 
@@ -262,11 +265,11 @@ fi
 sudo -Hiu gvm echo "echo Sleeping 2 minutes" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
 sudo -Hiu gvm echo "echo More info can be found by searching greenbone-nvt-sync rsync connection refused on Google" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
 
-if [ $GVMVERSION = "11" ]; then
-    sudo -Hiu gvm echo "/opt/gvm/sbin/greenbone-scapdata-sync" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
-elif [ $GVMVERSION = "20" ]; then
+#if [ $GVMVERSION = "11" ]; then
+#    sudo -Hiu gvm echo "/opt/gvm/sbin/greenbone-scapdata-sync" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
+#elif [ $GVMVERSION = "20" ]; then
     sudo -Hiu gvm echo "/opt/gvm/sbin/greenbone-feed-sync --type SCAP" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
-fi
+#fi
 
 sudo -Hiu gvm echo "echo Sleeping 5 minutes" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
 sudo -Hiu gvm echo "echo More info can be found by searching greenbone-nvt-sync rsync connection refused on Google" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
@@ -417,10 +420,10 @@ sudo -Hiu gvm echo -e "/opt/gvm/sbin/gvmd --verify-scanner=UUID" | sed 's/UUID/\
 # Create OpenVAS (GVM 11) Admin
 sudo -Hiu gvm echo -e "/opt/gvm/sbin/gvmd --create-user gvmadmin --password=StrongPass" | sudo -Hiu gvm tee -a /opt/gvm/scan.sh
 
-if [ $GVMVERSION = "20" ]; then
+#if [ $GVMVERSION = "20" ]; then
     # Update feed sync GVMD_Data enable
     sudo -Hiu gvm echo -e "/opt/gvm/sbin/gvmd --get-users --verbose | cut -d \" \" -f 2 | xargs /opt/gvm/sbin/gvmd --modify-setting 78eceaec-3385-11ea-b237-28d24461215b --value " | sudo -Hiu gvm tee -a /opt/gvm/scan.sh
-fi
+#fi
 
 su gvm -c "/opt/gvm/scan.sh"
 su gvm -c "rm /opt/gvm/scan.sh"
