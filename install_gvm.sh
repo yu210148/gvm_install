@@ -16,18 +16,18 @@
 ######################################################################
 
 ## Version 11 is EOL so it shouldn't be an option here any longer. See also Github issue33
-#read -p "Would you like to install version 20 or 21? " GVMVERSION
+read -p "Would you like to install version 20 or 21? " GVMVERSION
 
-#validate input
-#if [[ $GVMVERSION = "21" ]] || [[ $GVMVERSION = "20" ]]; then
-#    echo "Okay, installing version $GVMVERSION"
-#else 
-#    echo "Sorry, I didn't understand the input $GVMVERSION."
-#    echo "Please re-run install_gvm.sh and enter a version number at the prompt"
-#    exit 1
-#fi
+validate input
+if [[ $GVMVERSION = "21" ]] || [[ $GVMVERSION = "20" ]]; then
+    echo "Okay, installing version $GVMVERSION"
+else 
+    echo "Sorry, I didn't understand the input $GVMVERSION."
+    echo "Please re-run install_gvm.sh and enter a version number at the prompt"
+    exit 1
+fi
 
-GVMVERSION='20'
+#GVMVERSION='20'
 
 apt-get update
 apt-get upgrade -y 
@@ -108,6 +108,9 @@ if [[ $ID = "debian" ]] || [[ $ID = "kali" ]]; then
     chown gvm:gvm /opt/gvm/.hushlogin
     touch /root/.hushlogin
 fi
+
+#debug break here
+exit 1
 
 sudo -Hiu gvm touch /opt/gvm/.bashrc
 sudo -Hiu gvm mv /opt/gvm/.bashrc /opt/gvm/.bashrc.bak # save original bashrc file 
