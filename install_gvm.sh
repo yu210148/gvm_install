@@ -18,7 +18,7 @@
 ## Version 11 is EOL so it shouldn't be an option here any longer. See also Github issue33
 read -p "Would you like to install version 20 or 21? " GVMVERSION
 
-validate input
+#validate input
 if [[ $GVMVERSION = "21" ]] || [[ $GVMVERSION = "20" ]]; then
     echo "Okay, installing version $GVMVERSION"
 else 
