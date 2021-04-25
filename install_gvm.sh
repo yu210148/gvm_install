@@ -205,18 +205,12 @@ sudo -Hiu gvm touch /opt/gvm/.bashrc
 # file is in /opt/gvm/bin and the line to edit is 364. More info can be found by searching
 # greenbone-nvt-sync rsync connection refused
 
-# trying this a different way here TODO: might need to refactor the rest to use this method. Trouble is that the export PKG_CONFIG_PATH doesn't persist though.
-
-#debug
-# let's not do the update here while debugging the build processes
+# Looks like they've placed sleep commands in the script now so the below is not needed
 #su gvm -c "sed -i '364isleep 300' /opt/gvm/bin/greenbone-nvt-sync"
 #su gvm -c "sed -i '364iecho Sleeping for 5 minutes' /opt/gvm/bin/greenbone-nvt-sync"
 #su gvm -c 'echo "More info can be found by searching greenbone-nvt-sync rsync connection refused on Google"'
-#su gvm -c /opt/gvm/bin/greenbone-nvt-sync
-#/opt/gvm/sbin/openvas --update-vt-info
-
-#debug break here
-#exit 1
+su gvm -c /opt/gvm/bin/greenbone-nvt-sync
+/opt/gvm/sbin/openvas --update-vt-info
 
 # Build and Install Greenbone Vulnerability Manager
 su gvm -c "touch /opt/gvm/gvm_build.sh"
@@ -293,13 +287,11 @@ if [ $GVMVERSION = "11" ]; then
     sudo -Hiu gvm echo "/opt/gvm/sbin/greenbone-feed-sync --type GVMD_DATA" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
 fi
 
-#debug
-# let's not do the update here while debugging the build processes
-#su gvm -c "/opt/gvm/feed.sh"
-#su gvm -c "rm /opt/gvm/feed.sh"
+su gvm -c "/opt/gvm/feed.sh"
+su gvm -c "rm /opt/gvm/feed.sh"
 
 # Set cron jobs to run once daily at random times
-#TODO DEBUG THIS when selecting version 21 only the last one appears in the gvm user's crontab 
+
 su gvm -c "touch /opt/gvm/cron.sh"
 su gvm -c "chmod u+x /opt/gvm/cron.sh"
 
