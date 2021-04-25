@@ -307,7 +307,7 @@ HOUR=$(shuf -i 0-23 -n 1)
 MINUTE=$(shuf -i 0-59 -n 1)
 if [ $GVMVERSION = "11" ]; then
     sudo -Hiu gvm echo "(crontab -l 2>/dev/null; echo \"${MINUTE} ${HOUR} * * * /opt/gvm/sbin/greenbone-scapdata-sync\") | crontab -" | sudo -Hiu gvm tee -a /opt/gvm/cron.sh
-elif [ $GVMVERSION = "20" ]; then
+elif [ $GVMVERSION = "20" ] || [ $GVMVERSION = "21" ]; then
     sudo -Hiu gvm echo "(crontab -l 2>/dev/null; echo \"${MINUTE} ${HOUR} * * * /opt/gvm/sbin/greenbone-feed-sync --type SCAP\") | crontab -" | sudo -Hiu gvm tee -a /opt/gvm/cron.sh
 fi
 
@@ -315,7 +315,7 @@ HOUR=$(shuf -i 0-23 -n 1)
 MINUTE=$(shuf -i 0-59 -n 1)
 if [ $GVMVERSION = "11" ]; then
     sudo -Hiu gvm echo "(crontab -l 2>/dev/null; echo \"${MINUTE} ${HOUR} * * * /opt/gvm/bin/greenbone-nvt-sync\") | crontab -" | sudo -Hiu gvm tee -a /opt/gvm/cron.sh
-elif [ $GVMVERSION = "20" ]; then
+elif [ $GVMVERSION = "20" ] || [ $GVMVERSION = "21" ]; then
     # I realise these are the same but I suspect they may need to be different.
     sudo -Hiu gvm echo "(crontab -l 2>/dev/null; echo \"${MINUTE} ${HOUR} * * * /opt/gvm/bin/greenbone-nvt-sync\") | crontab -" | sudo -Hiu gvm tee -a /opt/gvm/cron.sh
 fi
@@ -324,13 +324,13 @@ HOUR=$(shuf -i 0-23 -n 1)
 MINUTE=$(shuf -i 0-59 -n 1)
 if [ $GVMVERSION = "11" ]; then
     sudo -Hiu gvm echo "(crontab -l 2>/dev/null; echo \"${MINUTE} ${HOUR} * * * /opt/gvm/sbin/greenbone-certdata-sync\") | crontab -" | sudo -Hiu gvm tee -a /opt/gvm/cron.sh
-elif [ $GVMVERSION = "20" ]; then
+elif [ $GVMVERSION = "20" ] || [ $GVMVERSION = "21" ]; then
     sudo -Hiu gvm echo "(crontab -l 2>/dev/null; echo \"${MINUTE} ${HOUR} * * * /opt/gvm/sbin/greenbone-feed-sync --type CERT\") | crontab -" | sudo -Hiu gvm tee -a /opt/gvm/cron.sh
 fi
 
 HOUR=$(shuf -i 0-23 -n 1)
 MINUTE=$(shuf -i 0-59 -n 1)
-if [ $GVMVERSION = "20" ]; then
+if [ $GVMVERSION = "20" ] || [ $GVMVERSION = "21" ]; then
     sudo -Hiu gvm echo "(crontab -l 2>/dev/null; echo \"${MINUTE} ${HOUR} * * * /opt/gvm/sbin/greenbone-feed-sync --type GVMD_DATA\") | crontab -" | sudo -Hiu gvm tee -a /opt/gvm/cron.sh
 fi
 
@@ -347,7 +347,10 @@ su gvm -c "/opt/gvm/cron.sh"
 su gvm -c "rm /opt/gvm/cron.sh"
 
 #debug break here
-exit 1
+#exit 1
+# not sure why the below is failing when running straight through but working when I try to step though it manually could be a timing issue
+echo "Sleeping for 30 seconds..."
+sleep 30
 
 # Build and Install OSPd and OSPd-OpenVAS
 su gvm -c "touch /opt/gvm/ospd.sh"
@@ -534,9 +537,8 @@ systemctl enable --now gsa.{path,service}
 echo "The installation is done, but there may still be an update in progress."
 echo "Please be patient if you aren't able to log in at first."
 echo "You may also need to restart"
-if [ $GVMVERSION = "20" ]; then
+if [ $GVMVERSION = "20" ] || [ $GVMVERSION = "21" ]; then
     echo ""
-    echo "I've had some trouble with version 20 when testing"
     echo "If you're unable to log in to the web interface try restarting"
     echo "and running all of the update commands in the gvm user's crontab"
     echo "sudo su gvm -c \"crontab -l\""
