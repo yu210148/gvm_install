@@ -34,7 +34,7 @@ apt-get upgrade -y
 useradd -r -d /opt/gvm -c "GVM (OpenVAS) User" -s /bin/bash gvm
 mkdir /opt/gvm
 chown gvm:gvm /opt/gvm
-apt-get -y install gcc g++ make bison flex libksba-dev curl redis libpcap-dev cmake git pkg-config libglib2.0-dev libgpgme-dev libgnutls28-dev uuid-dev libssh-gcrypt-dev libldap2-dev gnutls-bin libmicrohttpd-dev libhiredis-dev zlib1g-dev libxml2-dev libradcli-dev clang-format libldap2-dev doxygen nmap gcc-mingw-w64 xml-twig-tools libical-dev perl-base heimdal-dev libpopt-dev libsnmp-dev python3-setuptools python3-paramiko python3-lxml python3-defusedxml python3-dev gettext python3-polib xmltoman python3-pip texlive-fonts-recommended xsltproc texlive-latex-extra rsync ufw ntp libunistring-dev git libnet1-dev --no-install-recommends
+apt-get -y install gcc g++ make bison flex libksba-dev curl redis libpcap-dev cmake git pkg-config libglib2.0-dev libgpgme-dev libgnutls28-dev uuid-dev libssh-gcrypt-dev libldap2-dev gnutls-bin libmicrohttpd-dev libhiredis-dev zlib1g-dev libxml2-dev libradcli-dev clang-format libldap2-dev doxygen nmap gcc-mingw-w64 xml-twig-tools libical-dev perl-base heimdal-dev libpopt-dev libsnmp-dev python3-setuptools python3-paramiko python3-lxml python3-defusedxml python3-dev gettext python3-polib xmltoman python3-pip texlive-fonts-recommended xsltproc texlive-latex-extra rsync ufw ntp libunistring-dev git libnet1-dev graphviz graphviz-dev --no-install-recommends
 curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
 echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
 apt-get update
@@ -505,27 +505,27 @@ systemctl enable --now gsa.{path,service}
 #debug
 # disable feed updates
 ##############################################################################
-## update NVT feed
-#su gvm -c /opt/gvm/bin/greenbone-nvt-sync
-#/opt/gvm/sbin/openvas --update-vt-info
-## give the db a chance to update
-#echo "Sleeping for 5 minutes to let the DB finish the NVT update"
-#sleep 300
-#
-## update GVMD_DATA
-#su gvm -c "/opt/gvm/sbin/greenbone-feed-sync --type GVMD_DATA"
-#echo "Sleeping for 5 minutes to let the DB finish the GVMD_DATA update"
-#sleep 300
-#
-## update SCAP
-#su gvm -c "/opt/gvm/sbin/greenbone-feed-sync --type SCAP"
-#echo "Sleeping for 5 minutes to let the DB finish the SCAP update"
-#sleep 300
-#
-## update CERT
-#su gvm -c "/opt/gvm/sbin/greenbone-feed-sync --type CERT"
-#echo "Sleeping for 5 minutes to let the DB finish the CERT update"
-#sleep 300
+# update NVT feed
+su gvm -c /opt/gvm/bin/greenbone-nvt-sync
+/opt/gvm/sbin/openvas --update-vt-info
+# give the db a chance to update
+echo "Sleeping for 5 minutes to let the DB finish the NVT update"
+sleep 300
+
+# update GVMD_DATA
+su gvm -c "/opt/gvm/sbin/greenbone-feed-sync --type GVMD_DATA"
+echo "Sleeping for 5 minutes to let the DB finish the GVMD_DATA update"
+sleep 300
+
+# update SCAP
+su gvm -c "/opt/gvm/sbin/greenbone-feed-sync --type SCAP"
+echo "Sleeping for 5 minutes to let the DB finish the SCAP update"
+sleep 300
+
+# update CERT
+su gvm -c "/opt/gvm/sbin/greenbone-feed-sync --type CERT"
+echo "Sleeping for 5 minutes to let the DB finish the CERT update"
+sleep 300
 ############################################################################
 
 
