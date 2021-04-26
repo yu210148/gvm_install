@@ -16,25 +16,25 @@
 ######################################################################
 
 ## Version 11 is EOL so it shouldn't be an option here any longer. See also Github issue33
-#read -p "Would you like to install version 20 or 21? " GVMVERSION
+read -p "Would you like to install version 20 or 21? " GVMVERSION
 
 #validate input
-#if [[ $GVMVERSION = "21" ]] || [[ $GVMVERSION = "20" ]]; then
-#    echo "Okay, installing version $GVMVERSION"
-#else 
-#    echo "Sorry, I didn't understand the input $GVMVERSION."
-#    echo "Please re-run install_gvm.sh and enter a version number at the prompt"
-#    exit 1
-#fi
+if [[ $GVMVERSION = "21" ]] || [[ $GVMVERSION = "20" ]]; then
+    echo "Okay, installing version $GVMVERSION"
+else 
+    echo "Sorry, I didn't understand the input $GVMVERSION."
+    echo "Please re-run install_gvm.sh and enter a version number at the prompt"
+    exit 1
+fi
 
-GVMVERSION='20'
+#GVMVERSION='20'
 
 apt-get update
 apt-get upgrade -y 
 useradd -r -d /opt/gvm -c "GVM (OpenVAS) User" -s /bin/bash gvm
 mkdir /opt/gvm
 chown gvm:gvm /opt/gvm
-apt-get -y install gcc g++ make bison flex libksba-dev curl redis libpcap-dev cmake git pkg-config libglib2.0-dev libgpgme-dev libgnutls28-dev uuid-dev libssh-gcrypt-dev libldap2-dev gnutls-bin libmicrohttpd-dev libhiredis-dev zlib1g-dev libxml2-dev libradcli-dev clang-format libldap2-dev doxygen nmap gcc-mingw-w64 xml-twig-tools libical-dev perl-base heimdal-dev libpopt-dev libsnmp-dev python3-setuptools python3-paramiko python3-lxml python3-defusedxml python3-dev gettext python3-polib xmltoman python3-pip texlive-fonts-recommended xsltproc texlive-latex-extra rsync ufw ntp libunistring-dev git libnet1-dev --no-install-recommends
+apt-get -y install gcc g++ make bison flex libksba-dev curl redis libpcap-dev cmake git pkg-config libglib2.0-dev libgpgme-dev libgnutls28-dev uuid-dev libssh-gcrypt-dev libldap2-dev gnutls-bin libmicrohttpd-dev libhiredis-dev zlib1g-dev libxml2-dev libradcli-dev clang-format libldap2-dev doxygen nmap gcc-mingw-w64 xml-twig-tools libical-dev perl-base heimdal-dev libpopt-dev libsnmp-dev python3-setuptools python3-paramiko python3-lxml python3-defusedxml python3-dev gettext python3-polib xmltoman python3-pip texlive-fonts-recommended xsltproc texlive-latex-extra rsync ufw ntp libunistring-dev git libnet1-dev graphviz graphviz-dev --no-install-recommends
 curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
 echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
 apt-get update
@@ -109,12 +109,15 @@ if [[ $ID = "debian" ]] || [[ $ID = "kali" ]]; then
     touch /root/.hushlogin
 fi
 
+#debug break here
+#exit 1
+
 sudo -Hiu gvm touch /opt/gvm/.bashrc
 sudo -Hiu gvm mv /opt/gvm/.bashrc /opt/gvm/.bashrc.bak # save original bashrc file 
 sudo -Hiu gvm touch /opt/gvm/.bashrc
 sudo -Hiu gvm echo "export PKG_CONFIG_PATH=/opt/gvm/lib/pkgconfig:$PKG_CONFIG_PATH" | sudo -Hiu gvm tee -a /opt/gvm/.bashrc
 
-# Build and Install GVM 11 Libraries
+# Build and Install GVM Libraries
 sudo -Hiu gvm echo "cd /opt/gvm/gvm-libs" | sudo -Hiu gvm tee -a /opt/gvm/.bashrc
 sudo -Hiu gvm echo "mkdir build" | sudo -Hiu gvm tee -a /opt/gvm/.bashrc
 sudo -Hiu gvm echo "cd build" | sudo -Hiu gvm tee -a /opt/gvm/.bashrc
@@ -188,10 +191,14 @@ fi
 
 echo "gvm ALL = NOPASSWD: /opt/gvm/sbin/gsad" >> /etc/sudoers.d/gvm
 
+# debug we seem to be good up to here
+#exit 1
+
 #Update OpenVAS NVTs
-sudo -Hiu gvm touch /opt/gvm/.bashrc
-sudo -Hiu gvm mv /opt/gvm/.bashrc /opt/gvm/.bashrc.bak # save original bashrc file 
-sudo -Hiu gvm touch /opt/gvm/.bashrc
+# Moving this to where the other feeds are updated
+#sudo -Hiu gvm touch /opt/gvm/.bashrc
+#sudo -Hiu gvm mv /opt/gvm/.bashrc /opt/gvm/.bashrc.bak # save original bashrc file 
+#sudo -Hiu gvm touch /opt/gvm/.bashrc
 
 # This next command fails in get_community_feed function in greenbone-nvt-sync if the
 # rsync calls are too close together as only one connection is allowed at a time. So we
@@ -199,12 +206,10 @@ sudo -Hiu gvm touch /opt/gvm/.bashrc
 # file is in /opt/gvm/bin and the line to edit is 364. More info can be found by searching
 # greenbone-nvt-sync rsync connection refused
 
-# trying this a different way here TODO: might need to refactor the rest to use this method. Trouble is that the export PKG_CONFIG_PATH doesn't persist though.
-su gvm -c "sed -i '364isleep 300' /opt/gvm/bin/greenbone-nvt-sync"
-su gvm -c "sed -i '364iecho Sleeping for 5 minutes' /opt/gvm/bin/greenbone-nvt-sync"
-su gvm -c 'echo "More info can be found by searching greenbone-nvt-sync rsync connection refused on Google"'
-su gvm -c /opt/gvm/bin/greenbone-nvt-sync
-/opt/gvm/sbin/openvas --update-vt-info
+# Looks like they've placed sleep commands in the script now so the below is not needed
+#su gvm -c "sed -i '364isleep 300' /opt/gvm/bin/greenbone-nvt-sync"
+#su gvm -c "sed -i '364iecho Sleeping for 5 minutes' /opt/gvm/bin/greenbone-nvt-sync"
+#su gvm -c 'echo "More info can be found by searching greenbone-nvt-sync rsync connection refused on Google"'
 
 # Build and Install Greenbone Vulnerability Manager
 su gvm -c "touch /opt/gvm/gvm_build.sh"
@@ -242,48 +247,6 @@ sudo -Hiu gvm echo "make install" | sudo -Hiu gvm tee -a /opt/gvm/gsa_build.sh
 su gvm -c "/opt/gvm/gsa_build.sh"
 su gvm -c "rm /opt/gvm/gsa_build.sh"
 
-# Update GVM CERT and SCAP data from the feed servers
-su gvm -c "touch /opt/gvm/feed.sh"
-su gvm -c "chmod u+x /opt/gvm/feed.sh"
-
-sudo -Hiu gvm echo "echo Sleeping 5 minutes" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
-sudo -Hiu gvm echo "echo More info can be found by searching greenbone-nvt-sync rsync connection refused on Google" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
-sudo -Hiu gvm echo "sleep 300" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh # allow a NAT connection to close
-if [ $GVMVERSION = "11" ]; then
-    sudo -Hiu gvm echo "sed -i '368isleep 120' /opt/gvm/sbin/greenbone-scapdata-sync" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
-#elif [ $GVMVERSION = "20" ]; then
-    # This makes no sense. TODO: Line 368 in gvm 11 does not equal line 386 in gvm 20 so where's the right place to put this sleep command?
-    #sudo -Hiu gvm echo "sed -i '368isleep 120' /opt/gvm/sbin/greenbone-feed-sync --type SCAP" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
-fi
-
-sudo -Hiu gvm echo "echo Sleeping 2 minutes" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
-sudo -Hiu gvm echo "echo More info can be found by searching greenbone-nvt-sync rsync connection refused on Google" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
-
-if [ $GVMVERSION = "11" ]; then
-    sudo -Hiu gvm echo "/opt/gvm/sbin/greenbone-scapdata-sync" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
-elif [ $GVMVERSION = "20" ]; then
-    sudo -Hiu gvm echo "/opt/gvm/sbin/greenbone-feed-sync --type SCAP" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
-fi
-
-sudo -Hiu gvm echo "echo Sleeping 5 minutes" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
-sudo -Hiu gvm echo "echo More info can be found by searching greenbone-nvt-sync rsync connection refused on Google" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
-sudo -Hiu gvm echo "sleep 300" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh # allow a NAT connection to close
-
-# Add sleep to future greenbone-certdata-sync calls (https://github.com/yu210148/gvm_install/issues/2 --Thanks kirk56k)
-if [ $GVMVERSION = "11" ]; then
-    sudo -Hiu gvm echo "sed -i '349isleep 300' /opt/gvm/sbin/greenbone-certdata-sync" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
-    sudo -Hiu gvm echo "/opt/gvm/sbin/greenbone-certdata-sync" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
-#elif [ $GVMVERSION = "20" ]; then
-    # according to the reporter in Issue12 this is what's needed however, it seems unlikely to me that inserting the sleep statement into line 349 of
-    # /opt/gvm/greenbone-feed-sync is the same as inserting it into line 349 of greenbone-certdata-sync in version 11
-    # same goes for the sed statement above.
-    #sudo -Hiu gvm echo "sed -i '349isleep 300' /opt/gvm/sbin/greenbone-feed-sync --type CERT" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
-    sudo -Hiu gvm echo "/opt/gvm/sbin/greenbone-feed-sync --type GVMD_DATA" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
-fi
-
-su gvm -c "/opt/gvm/feed.sh"
-su gvm -c "rm /opt/gvm/feed.sh"
-
 # Set cron jobs to run once daily at random times
 su gvm -c "touch /opt/gvm/cron.sh"
 su gvm -c "chmod u+x /opt/gvm/cron.sh"
@@ -292,7 +255,7 @@ HOUR=$(shuf -i 0-23 -n 1)
 MINUTE=$(shuf -i 0-59 -n 1)
 if [ $GVMVERSION = "11" ]; then
     sudo -Hiu gvm echo "(crontab -l 2>/dev/null; echo \"${MINUTE} ${HOUR} * * * /opt/gvm/sbin/greenbone-scapdata-sync\") | crontab -" | sudo -Hiu gvm tee -a /opt/gvm/cron.sh
-elif [ $GVMVERSION = "20" ]; then
+elif [ $GVMVERSION = "20" ] || [ $GVMVERSION = "21" ]; then
     sudo -Hiu gvm echo "(crontab -l 2>/dev/null; echo \"${MINUTE} ${HOUR} * * * /opt/gvm/sbin/greenbone-feed-sync --type SCAP\") | crontab -" | sudo -Hiu gvm tee -a /opt/gvm/cron.sh
 fi
 
@@ -300,7 +263,7 @@ HOUR=$(shuf -i 0-23 -n 1)
 MINUTE=$(shuf -i 0-59 -n 1)
 if [ $GVMVERSION = "11" ]; then
     sudo -Hiu gvm echo "(crontab -l 2>/dev/null; echo \"${MINUTE} ${HOUR} * * * /opt/gvm/bin/greenbone-nvt-sync\") | crontab -" | sudo -Hiu gvm tee -a /opt/gvm/cron.sh
-elif [ $GVMVERSION = "20" ]; then
+elif [ $GVMVERSION = "20" ] || [ $GVMVERSION = "21" ]; then
     # I realise these are the same but I suspect they may need to be different.
     sudo -Hiu gvm echo "(crontab -l 2>/dev/null; echo \"${MINUTE} ${HOUR} * * * /opt/gvm/bin/greenbone-nvt-sync\") | crontab -" | sudo -Hiu gvm tee -a /opt/gvm/cron.sh
 fi
@@ -309,13 +272,13 @@ HOUR=$(shuf -i 0-23 -n 1)
 MINUTE=$(shuf -i 0-59 -n 1)
 if [ $GVMVERSION = "11" ]; then
     sudo -Hiu gvm echo "(crontab -l 2>/dev/null; echo \"${MINUTE} ${HOUR} * * * /opt/gvm/sbin/greenbone-certdata-sync\") | crontab -" | sudo -Hiu gvm tee -a /opt/gvm/cron.sh
-elif [ $GVMVERSION = "20" ]; then
+elif [ $GVMVERSION = "20" ] || [ $GVMVERSION = "21" ]; then
     sudo -Hiu gvm echo "(crontab -l 2>/dev/null; echo \"${MINUTE} ${HOUR} * * * /opt/gvm/sbin/greenbone-feed-sync --type CERT\") | crontab -" | sudo -Hiu gvm tee -a /opt/gvm/cron.sh
 fi
 
 HOUR=$(shuf -i 0-23 -n 1)
 MINUTE=$(shuf -i 0-59 -n 1)
-if [ $GVMVERSION = "20" ]; then
+if [ $GVMVERSION = "20" ] || [ $GVMVERSION = "21" ]; then
     sudo -Hiu gvm echo "(crontab -l 2>/dev/null; echo \"${MINUTE} ${HOUR} * * * /opt/gvm/sbin/greenbone-feed-sync --type GVMD_DATA\") | crontab -" | sudo -Hiu gvm tee -a /opt/gvm/cron.sh
 fi
 
@@ -330,6 +293,12 @@ sudo -Hiu gvm echo "/opt/gvm/bin/gvm-manage-certs -a" | sudo -Hiu gvm tee -a /op
 
 su gvm -c "/opt/gvm/cron.sh"
 su gvm -c "rm /opt/gvm/cron.sh"
+
+#debug break here
+#exit 1
+# not sure why the below is failing when running straight through but working when I try to step though it manually could be a timing issue
+echo "Sleeping for 30 seconds..."
+sleep 30
 
 # Build and Install OSPd and OSPd-OpenVAS
 su gvm -c "touch /opt/gvm/ospd.sh"
@@ -414,10 +383,10 @@ sudo -Hiu gvm echo -e "/opt/gvm/sbin/gvmd --verify-scanner=UUID" | sed 's/UUID/\
 # Create OpenVAS (GVM 11) Admin
 sudo -Hiu gvm echo -e "/opt/gvm/sbin/gvmd --create-user gvmadmin --password=StrongPass" | sudo -Hiu gvm tee -a /opt/gvm/scan.sh
 
-if [ $GVMVERSION = "20" ]; then
+#if [ $GVMVERSION = "20" ]; then
     # Update feed sync GVMD_Data enable
     sudo -Hiu gvm echo -e "/opt/gvm/sbin/gvmd --get-users --verbose | cut -d \" \" -f 2 | xargs /opt/gvm/sbin/gvmd --modify-setting 78eceaec-3385-11ea-b237-28d24461215b --value " | sudo -Hiu gvm tee -a /opt/gvm/scan.sh
-fi
+#fi
 
 su gvm -c "/opt/gvm/scan.sh"
 su gvm -c "rm /opt/gvm/scan.sh"
@@ -511,14 +480,67 @@ systemctl enable --now openvas
 systemctl enable --now gvm.{path,service}
 systemctl enable --now gsa.{path,service}
 
+# Update GVM CERT and SCAP data from the feed servers
+#su gvm -c "touch /opt/gvm/feed.sh"
+#su gvm -c "chmod u+x /opt/gvm/feed.sh"
+
+# sleep statements have been added to the update scripts so the below should no longer be needed
+#sudo -Hiu gvm echo "echo Sleeping 5 minutes" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
+#sudo -Hiu gvm echo "echo More info can be found by searching greenbone-nvt-sync rsync connection refused on Google" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
+#sudo -Hiu gvm echo "sleep 300" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh # allow a NAT connection to close
+
+#sudo -Hiu gvm echo "echo Sleeping 2 minutes" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
+#sudo -Hiu gvm echo "echo More info can be found by searching greenbone-nvt-sync rsync connection refused on Google" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
+
+##sudo -Hiu gvm echo "/opt/gvm/sbin/greenbone-feed-sync --type SCAP" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
+
+#sudo -Hiu gvm echo "echo Sleeping 5 minutes" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
+#sudo -Hiu gvm echo "echo More info can be found by searching greenbone-nvt-sync rsync connection refused on Google" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
+#sudo -Hiu gvm echo "sleep 300" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh # allow a NAT connection to close
+
+##sudo -Hiu gvm echo "/opt/gvm/sbin/greenbone-feed-sync --type GVMD_DATA" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
+
+
+
+#debug
+# disable feed updates
+##############################################################################
+# update NVT feed
+su gvm -c /opt/gvm/bin/greenbone-nvt-sync
+/opt/gvm/sbin/openvas --update-vt-info
+# give the db a chance to update
+echo "Sleeping for 5 minutes to let the DB finish the NVT update"
+sleep 300
+
+# update GVMD_DATA
+su gvm -c "/opt/gvm/sbin/greenbone-feed-sync --type GVMD_DATA"
+echo "Sleeping for 5 minutes to let the DB finish the GVMD_DATA update"
+sleep 300
+
+# update SCAP
+su gvm -c "/opt/gvm/sbin/greenbone-feed-sync --type SCAP"
+echo "Sleeping for 5 minutes to let the DB finish the SCAP update"
+sleep 300
+
+# update CERT
+su gvm -c "/opt/gvm/sbin/greenbone-feed-sync --type CERT"
+echo "Sleeping for 5 minutes to let the DB finish the CERT update"
+sleep 300
+############################################################################
+
+
+
+
+#su gvm -c "/opt/gvm/feed.sh"
+#su gvm -c "rm /opt/gvm/feed.sh"
+
 
 # REMIND USER TO CHANGE DEFAULT PASSWORD
 echo "The installation is done, but there may still be an update in progress."
 echo "Please be patient if you aren't able to log in at first."
 echo "You may also need to restart"
-if [ $GVMVERSION = "20" ]; then
+if [ $GVMVERSION = "20" ] || [ $GVMVERSION = "21" ]; then
     echo ""
-    echo "I've had some trouble with version 20 when testing"
     echo "If you're unable to log in to the web interface try restarting"
     echo "and running all of the update commands in the gvm user's crontab"
     echo "sudo su gvm -c \"crontab -l\""
