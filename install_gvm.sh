@@ -117,7 +117,7 @@ sudo -Hiu gvm mv /opt/gvm/.bashrc /opt/gvm/.bashrc.bak # save original bashrc fi
 sudo -Hiu gvm touch /opt/gvm/.bashrc
 sudo -Hiu gvm echo "export PKG_CONFIG_PATH=/opt/gvm/lib/pkgconfig:$PKG_CONFIG_PATH" | sudo -Hiu gvm tee -a /opt/gvm/.bashrc
 
-# Build and Install GVM 11 Libraries
+# Build and Install GVM Libraries
 sudo -Hiu gvm echo "cd /opt/gvm/gvm-libs" | sudo -Hiu gvm tee -a /opt/gvm/.bashrc
 sudo -Hiu gvm echo "mkdir build" | sudo -Hiu gvm tee -a /opt/gvm/.bashrc
 sudo -Hiu gvm echo "cd build" | sudo -Hiu gvm tee -a /opt/gvm/.bashrc
@@ -195,9 +195,10 @@ echo "gvm ALL = NOPASSWD: /opt/gvm/sbin/gsad" >> /etc/sudoers.d/gvm
 #exit 1
 
 #Update OpenVAS NVTs
-sudo -Hiu gvm touch /opt/gvm/.bashrc
-sudo -Hiu gvm mv /opt/gvm/.bashrc /opt/gvm/.bashrc.bak # save original bashrc file 
-sudo -Hiu gvm touch /opt/gvm/.bashrc
+# Moving this to where the other feeds are updated
+#sudo -Hiu gvm touch /opt/gvm/.bashrc
+#sudo -Hiu gvm mv /opt/gvm/.bashrc /opt/gvm/.bashrc.bak # save original bashrc file 
+#sudo -Hiu gvm touch /opt/gvm/.bashrc
 
 # This next command fails in get_community_feed function in greenbone-nvt-sync if the
 # rsync calls are too close together as only one connection is allowed at a time. So we
@@ -209,8 +210,6 @@ sudo -Hiu gvm touch /opt/gvm/.bashrc
 #su gvm -c "sed -i '364isleep 300' /opt/gvm/bin/greenbone-nvt-sync"
 #su gvm -c "sed -i '364iecho Sleeping for 5 minutes' /opt/gvm/bin/greenbone-nvt-sync"
 #su gvm -c 'echo "More info can be found by searching greenbone-nvt-sync rsync connection refused on Google"'
-su gvm -c /opt/gvm/bin/greenbone-nvt-sync
-/opt/gvm/sbin/openvas --update-vt-info
 
 # Build and Install Greenbone Vulnerability Manager
 su gvm -c "touch /opt/gvm/gvm_build.sh"
@@ -248,50 +247,7 @@ sudo -Hiu gvm echo "make install" | sudo -Hiu gvm tee -a /opt/gvm/gsa_build.sh
 su gvm -c "/opt/gvm/gsa_build.sh"
 su gvm -c "rm /opt/gvm/gsa_build.sh"
 
-# Update GVM CERT and SCAP data from the feed servers
-su gvm -c "touch /opt/gvm/feed.sh"
-su gvm -c "chmod u+x /opt/gvm/feed.sh"
-
-sudo -Hiu gvm echo "echo Sleeping 5 minutes" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
-sudo -Hiu gvm echo "echo More info can be found by searching greenbone-nvt-sync rsync connection refused on Google" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
-sudo -Hiu gvm echo "sleep 300" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh # allow a NAT connection to close
-if [ $GVMVERSION = "11" ]; then
-    sudo -Hiu gvm echo "sed -i '368isleep 120' /opt/gvm/sbin/greenbone-scapdata-sync" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
-#elif [ $GVMVERSION = "20" ]; then
-    # This makes no sense. TODO: Line 368 in gvm 11 does not equal line 386 in gvm 20 so where's the right place to put this sleep command?
-    #sudo -Hiu gvm echo "sed -i '368isleep 120' /opt/gvm/sbin/greenbone-feed-sync --type SCAP" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
-fi
-
-sudo -Hiu gvm echo "echo Sleeping 2 minutes" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
-sudo -Hiu gvm echo "echo More info can be found by searching greenbone-nvt-sync rsync connection refused on Google" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
-
-#if [ $GVMVERSION = "11" ]; then
-#    sudo -Hiu gvm echo "/opt/gvm/sbin/greenbone-scapdata-sync" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
-#elif [ $GVMVERSION = "20" ]; then
-    sudo -Hiu gvm echo "/opt/gvm/sbin/greenbone-feed-sync --type SCAP" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
-#fi
-
-sudo -Hiu gvm echo "echo Sleeping 5 minutes" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
-sudo -Hiu gvm echo "echo More info can be found by searching greenbone-nvt-sync rsync connection refused on Google" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
-sudo -Hiu gvm echo "sleep 300" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh # allow a NAT connection to close
-
-# Add sleep to future greenbone-certdata-sync calls (https://github.com/yu210148/gvm_install/issues/2 --Thanks kirk56k)
-if [ $GVMVERSION = "11" ]; then
-    sudo -Hiu gvm echo "sed -i '349isleep 300' /opt/gvm/sbin/greenbone-certdata-sync" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
-    sudo -Hiu gvm echo "/opt/gvm/sbin/greenbone-certdata-sync" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
-#elif [ $GVMVERSION = "20" ]; then
-    # according to the reporter in Issue12 this is what's needed however, it seems unlikely to me that inserting the sleep statement into line 349 of
-    # /opt/gvm/greenbone-feed-sync is the same as inserting it into line 349 of greenbone-certdata-sync in version 11
-    # same goes for the sed statement above.
-    #sudo -Hiu gvm echo "sed -i '349isleep 300' /opt/gvm/sbin/greenbone-feed-sync --type CERT" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
-    sudo -Hiu gvm echo "/opt/gvm/sbin/greenbone-feed-sync --type GVMD_DATA" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
-fi
-
-su gvm -c "/opt/gvm/feed.sh"
-su gvm -c "rm /opt/gvm/feed.sh"
-
 # Set cron jobs to run once daily at random times
-
 su gvm -c "touch /opt/gvm/cron.sh"
 su gvm -c "chmod u+x /opt/gvm/cron.sh"
 
@@ -523,6 +479,60 @@ systemctl daemon-reload
 systemctl enable --now openvas
 systemctl enable --now gvm.{path,service}
 systemctl enable --now gsa.{path,service}
+
+# Update GVM CERT and SCAP data from the feed servers
+#su gvm -c "touch /opt/gvm/feed.sh"
+#su gvm -c "chmod u+x /opt/gvm/feed.sh"
+
+# sleep statements have been added to the update scripts so the below should no longer be needed
+#sudo -Hiu gvm echo "echo Sleeping 5 minutes" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
+#sudo -Hiu gvm echo "echo More info can be found by searching greenbone-nvt-sync rsync connection refused on Google" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
+#sudo -Hiu gvm echo "sleep 300" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh # allow a NAT connection to close
+
+#sudo -Hiu gvm echo "echo Sleeping 2 minutes" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
+#sudo -Hiu gvm echo "echo More info can be found by searching greenbone-nvt-sync rsync connection refused on Google" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
+
+##sudo -Hiu gvm echo "/opt/gvm/sbin/greenbone-feed-sync --type SCAP" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
+
+#sudo -Hiu gvm echo "echo Sleeping 5 minutes" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
+#sudo -Hiu gvm echo "echo More info can be found by searching greenbone-nvt-sync rsync connection refused on Google" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
+#sudo -Hiu gvm echo "sleep 300" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh # allow a NAT connection to close
+
+##sudo -Hiu gvm echo "/opt/gvm/sbin/greenbone-feed-sync --type GVMD_DATA" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
+
+
+
+#debug
+# disable feed updates
+##############################################################################
+## update NVT feed
+#su gvm -c /opt/gvm/bin/greenbone-nvt-sync
+#/opt/gvm/sbin/openvas --update-vt-info
+## give the db a chance to update
+#echo "Sleeping for 5 minutes to let the DB finish the NVT update"
+#sleep 300
+#
+## update GVMD_DATA
+#su gvm -c "/opt/gvm/sbin/greenbone-feed-sync --type GVMD_DATA"
+#echo "Sleeping for 5 minutes to let the DB finish the GVMD_DATA update"
+#sleep 300
+#
+## update SCAP
+#su gvm -c "/opt/gvm/sbin/greenbone-feed-sync --type SCAP"
+#echo "Sleeping for 5 minutes to let the DB finish the SCAP update"
+#sleep 300
+#
+## update CERT
+#su gvm -c "/opt/gvm/sbin/greenbone-feed-sync --type CERT"
+#echo "Sleeping for 5 minutes to let the DB finish the CERT update"
+#sleep 300
+############################################################################
+
+
+
+
+#su gvm -c "/opt/gvm/feed.sh"
+#su gvm -c "rm /opt/gvm/feed.sh"
 
 
 # REMIND USER TO CHANGE DEFAULT PASSWORD
