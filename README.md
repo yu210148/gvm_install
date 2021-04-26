@@ -1,5 +1,5 @@
 # gvm_install
-A script to install GVM / 20 on Ubuntu 20.04
+A script to install GVM 20 / 21 on Ubuntu 20.04
 
 Usage:
 
@@ -12,6 +12,7 @@ sudo ./install_gvm.sh
 
 Debian:
 * Note, I had an issue when testing GVM version 20 on Debian where nmap wasn't detected. I don't have a resolution for this at the moment so if you select version 20 on Debian stable you may run into issues. If you have any idea how to fix this please let me know. 
+* I've not tested GVM 21 on Debian yet.
 ```
 apt install sudo
 usermod -aG sudo <your-user-name> # add your user to the sudoer's group
