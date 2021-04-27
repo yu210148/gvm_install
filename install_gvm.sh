@@ -60,6 +60,7 @@ systemctl enable postgresql
 # It throws an error but it's not critical.
 ID=`grep ^ID= /etc/os-release | sed 's/ID=//g'`
 if [[ $ID = "debian" ]] || [[ $ID = "kali" ]]; then
+    # TODO this line fails on debian 10 with gvm21 (file not found) probably a different cmake version
     sed -i 's/"12" "11" "10"/"13" "12" "11" "10"/g' /usr/share/cmake-3.18/Modules/FindPostgreSQL.cmake
 fi
 
