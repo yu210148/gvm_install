@@ -11,7 +11,7 @@ sudo ./install_gvm.sh
 ```
 
 Debian:
-* Note, I had an issue when testing GVM version 20 on Debian where nmap wasn't detected. I don't have a resolution for this at the moment so if you select version 20 on Debian stable you may run into issues. If you have any idea how to fix this please let me know. 
+* Note, I had an issue when testing GVM version 20 on Debian where nmap wasn't detected. I don't have a resolution for this at the moment so if you select version 20 on Debian stable you may run into issues. If you have any idea how to fix this please let me know. This doesn't seem to affect GVM version 21.
 
 ```
 apt install sudo
