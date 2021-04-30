@@ -295,7 +295,7 @@ su gvm -c "/opt/gvm/cron.sh"
 su gvm -c "rm /opt/gvm/cron.sh"
 
 #debug break here
-exit 1
+#exit 1
 
 # not sure why the below is failing when running straight through but working when I try to step though it manually could be a timing issue
 echo "Sleeping for 30 seconds..."
@@ -348,6 +348,19 @@ sudo -Hiu gvm echo "export PYTHONPATH=/opt/gvm/lib/python$PY3VER/site-packages" 
 # Debian:
 # ERROR: get_db_connection: Not possible to run openvas. [Errno 2] No such file or directory: 'openvas': 'openvas'
 
+# TODO: this next line is failing for me on Debian 10 
+# at least the first time it's run; if I run the line a second time it appears to work as expected
+#
+#############################################################
+
+#Error in atexit._run_exitfuncs:
+#Traceback (most recent call last):
+#  File "/opt/gvm/lib/python3.7/site-packages/ospd-21.4.0-py3.7.egg/ospd/main.py", line 83, in exit_cleanup
+#  File "/opt/gvm/lib/python3.7/site-packages/ospd-21.4.0-py3.7.egg/ospd/server.py", line 233, in close
+#  File "/opt/gvm/lib/python3.7/site-packages/ospd-21.4.0-py3.7.egg/ospd/server.py", line 149, in close
+#AttributeError: 'NoneType' object has no attribute 'shutdown'
+
+#############################################################
 sudo -Hiu gvm echo "/usr/bin/python3 /opt/gvm/bin/ospd-openvas --pid-file /opt/gvm/var/run/ospd-openvas.pid --log-file /opt/gvm/var/log/gvm/ospd-openvas.log --lock-file-dir /opt/gvm/var/run -u /opt/gvm/var/run/ospd.sock" | sudo -Hiu gvm tee -a /opt/gvm/start.sh
 
 # Start GVM
@@ -357,6 +370,9 @@ sudo -Hiu gvm echo "sudo /opt/gvm/sbin/gsad" | sudo -Hiu gvm tee -a /opt/gvm/sta
 
 # Wait a moment for the above to start up
 sudo -Hiu gvm echo "sleep 10" | sudo -Hiu gvm tee -a /opt/gvm/start.sh
+
+# DEBUG
+exit 1
 
 su gvm -c "/opt/gvm/start.sh"
 su gvm -c "rm /opt/gvm/start.sh"
