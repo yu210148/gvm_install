@@ -295,7 +295,8 @@ su gvm -c "/opt/gvm/cron.sh"
 su gvm -c "rm /opt/gvm/cron.sh"
 
 #debug break here
-#exit 1
+exit 1
+
 # not sure why the below is failing when running straight through but working when I try to step though it manually could be a timing issue
 echo "Sleeping for 30 seconds..."
 sleep 30
