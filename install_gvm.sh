@@ -1,6 +1,6 @@
 #!/bin/bash
 ######################################################################
-# Script to install Greenbone/OpenVAS on Ubuntu 20.04
+# Script to install Greenbone/OpenVAS on Ubuntu 20.04 or Debian 10
 #
 # Note: run as root
 #
@@ -9,13 +9,10 @@
 # Based on:
 # https://kifarunix.com/install-and-setup-gvm-11-on-ubuntu-20-04/?amp
 #
-# Works-for-me as of 2020-05-12. Your experience may be different.
-# Use at your own risk.
-#
 # Licensed under GPLv3 or later
 ######################################################################
 
-## Version 11 is EOL so it shouldn't be an option here any longer. See also Github issue33
+# Find out which version to install from user
 read -p "Would you like to install version 20 or 21? " GVMVERSION
 
 #validate input
@@ -27,7 +24,7 @@ else
     exit 1
 fi
 
-#GVMVERSION='20'
+#GVMVERSION='21'
 
 apt-get update
 apt-get upgrade -y 
@@ -55,28 +52,21 @@ sudo -Hiu postgres psql -c 'create extension "pgcrypto";' gvmd
 systemctl restart postgresql
 systemctl enable postgresql
 
+# Taking the below out. If anyone wants to make another attempt to get this working on Kali
+# feel free.
 # Kali Linux uses postgresql 13 which cmake doesn't know about as of version 3.18 so it get's added here
 # should have no effect on Debian stable as the line starts with "11" rather than "12" so it won't be matched.
 # It throws an error but it's not critical.
 ID=`grep ^ID= /etc/os-release | sed 's/ID=//g'`
-if [[ $ID = "kali" ]]; then
-    sed -i 's/"12" "11" "10"/"13" "12" "11" "10"/g' /usr/share/cmake-3.18/Modules/FindPostgreSQL.cmake
-fi
+#if [[ $ID = "kali" ]]; then
+#    sed -i 's/"12" "11" "10"/"13" "12" "11" "10"/g' /usr/share/cmake-3.18/Modules/FindPostgreSQL.cmake
+#fi
 
 sed -i 's/\"$/\:\/opt\/gvm\/bin\:\/opt\/gvm\/sbin\:\/opt\/gvm\/\.local\/bin\"/g' /etc/environment
 echo "/opt/gvm/lib" > /etc/ld.so.conf.d/gvm.conf
 sudo -Hiu gvm mkdir /tmp/gvm-source
 cd /tmp/gvm-source
 
-#if [ $GVMVERSION = "11" ]; then
-    # if installing GVM ver. 11 
-#    sudo -Hiu gvm git clone -b gvm-libs-11.0 https://github.com/greenbone/gvm-libs.git
-#    sudo -Hiu gvm git clone https://github.com/greenbone/openvas-smb.git
-#    sudo -Hiu gvm git clone -b openvas-7.0 https://github.com/greenbone/openvas.git
-#    sudo -Hiu gvm git clone -b ospd-2.0 https://github.com/greenbone/ospd.git
-#    sudo -Hiu gvm git clone -b ospd-openvas-1.0 https://github.com/greenbone/ospd-openvas.git
-#    sudo -Hiu gvm git clone -b gvmd-9.0 https://github.com/greenbone/gvmd.git
-#    sudo -Hiu gvm git clone -b gsa-9.0 https://github.com/greenbone/gsa.git
 if [ $GVMVERSION = "20" ]; then
     sudo -Hiu gvm git clone -b v20.8.1 https://github.com/greenbone/gvm-libs.git
     sudo -Hiu gvm git clone https://github.com/greenbone/openvas-smb.git
@@ -109,9 +99,9 @@ if [[ $ID = "debian" ]] || [[ $ID = "kali" ]]; then
     touch /root/.hushlogin
 fi
 
-#debug break here
-#exit 1
-
+# TODO should refactor this to write out a script for the gvm user to execute like the ones later in 
+# this script leaving .bashrc alone. I initially used .bashrc just because it was automatically
+# executed when switching to the gvm user.
 sudo -Hiu gvm touch /opt/gvm/.bashrc
 sudo -Hiu gvm mv /opt/gvm/.bashrc /opt/gvm/.bashrc.bak # save original bashrc file 
 sudo -Hiu gvm touch /opt/gvm/.bashrc
@@ -191,26 +181,6 @@ fi
 
 echo "gvm ALL = NOPASSWD: /opt/gvm/sbin/gsad" >> /etc/sudoers.d/gvm
 
-# debug we seem to be good up to here
-#exit 1
-
-#Update OpenVAS NVTs
-# Moving this to where the other feeds are updated
-#sudo -Hiu gvm touch /opt/gvm/.bashrc
-#sudo -Hiu gvm mv /opt/gvm/.bashrc /opt/gvm/.bashrc.bak # save original bashrc file 
-#sudo -Hiu gvm touch /opt/gvm/.bashrc
-
-# This next command fails in get_community_feed function in greenbone-nvt-sync if the
-# rsync calls are too close together as only one connection is allowed at a time. So we
-# need to add a sleep command in that file to pause the sync so that the NAT connection can close
-# file is in /opt/gvm/bin and the line to edit is 364. More info can be found by searching
-# greenbone-nvt-sync rsync connection refused
-
-# Looks like they've placed sleep commands in the script now so the below is not needed
-#su gvm -c "sed -i '364isleep 300' /opt/gvm/bin/greenbone-nvt-sync"
-#su gvm -c "sed -i '364iecho Sleeping for 5 minutes' /opt/gvm/bin/greenbone-nvt-sync"
-#su gvm -c 'echo "More info can be found by searching greenbone-nvt-sync rsync connection refused on Google"'
-
 # Build and Install Greenbone Vulnerability Manager
 su gvm -c "touch /opt/gvm/gvm_build.sh"
 su gvm -c "chmod u+x /opt/gvm/gvm_build.sh"
@@ -234,7 +204,7 @@ sudo -Hiu gvm echo "export PKG_CONFIG_PATH=/opt/gvm/lib/pkgconfig:$PKG_CONFIG_PA
 sudo -Hiu gvm echo "cd /tmp/gvm-source/gsa" | sudo -Hiu gvm tee -a /opt/gvm/gsa_build.sh
 sudo -Hiu gvm echo "mkdir build" | sudo -Hiu gvm tee -a /opt/gvm/gsa_build.sh
 sudo -Hiu gvm echo "cd build" | sudo -Hiu gvm tee -a /opt/gvm/gsa_build.sh
-# if debian { cmake .. -DCMAKE_INSTALL_PREFIX=/opt/gvm -DCMAKE_BUILD_TYPE=RELEASE }
+
 ID=`grep ^ID= /etc/os-release | sed 's/ID=//g'`
 if [[ $ID = "debian" ]] || [[ $ID = "kali" ]]; then
     sudo -Hiu gvm echo "cmake .. -DCMAKE_INSTALL_PREFIX=/opt/gvm -DCMAKE_BUILD_TYPE=RELEASE" | sudo -Hiu gvm tee -a /opt/gvm/gsa_build.sh
@@ -253,34 +223,23 @@ su gvm -c "chmod u+x /opt/gvm/cron.sh"
 
 HOUR=$(shuf -i 0-23 -n 1)
 MINUTE=$(shuf -i 0-59 -n 1)
-if [ $GVMVERSION = "11" ]; then
-    sudo -Hiu gvm echo "(crontab -l 2>/dev/null; echo \"${MINUTE} ${HOUR} * * * /opt/gvm/sbin/greenbone-scapdata-sync\") | crontab -" | sudo -Hiu gvm tee -a /opt/gvm/cron.sh
-elif [ $GVMVERSION = "20" ] || [ $GVMVERSION = "21" ]; then
-    sudo -Hiu gvm echo "(crontab -l 2>/dev/null; echo \"${MINUTE} ${HOUR} * * * /opt/gvm/sbin/greenbone-feed-sync --type SCAP\") | crontab -" | sudo -Hiu gvm tee -a /opt/gvm/cron.sh
-fi
+sudo -Hiu gvm echo "(crontab -l 2>/dev/null; echo \"${MINUTE} ${HOUR} * * * /opt/gvm/sbin/greenbone-feed-sync --type SCAP\") | crontab -" | sudo -Hiu gvm tee -a /opt/gvm/cron.sh
+
 
 HOUR=$(shuf -i 0-23 -n 1)
 MINUTE=$(shuf -i 0-59 -n 1)
-if [ $GVMVERSION = "11" ]; then
-    sudo -Hiu gvm echo "(crontab -l 2>/dev/null; echo \"${MINUTE} ${HOUR} * * * /opt/gvm/bin/greenbone-nvt-sync\") | crontab -" | sudo -Hiu gvm tee -a /opt/gvm/cron.sh
-elif [ $GVMVERSION = "20" ] || [ $GVMVERSION = "21" ]; then
-    # I realise these are the same but I suspect they may need to be different.
-    sudo -Hiu gvm echo "(crontab -l 2>/dev/null; echo \"${MINUTE} ${HOUR} * * * /opt/gvm/bin/greenbone-nvt-sync\") | crontab -" | sudo -Hiu gvm tee -a /opt/gvm/cron.sh
-fi
+sudo -Hiu gvm echo "(crontab -l 2>/dev/null; echo \"${MINUTE} ${HOUR} * * * /opt/gvm/bin/greenbone-nvt-sync\") | crontab -" | sudo -Hiu gvm tee -a /opt/gvm/cron.sh
+
 
 HOUR=$(shuf -i 0-23 -n 1)
 MINUTE=$(shuf -i 0-59 -n 1)
-if [ $GVMVERSION = "11" ]; then
-    sudo -Hiu gvm echo "(crontab -l 2>/dev/null; echo \"${MINUTE} ${HOUR} * * * /opt/gvm/sbin/greenbone-certdata-sync\") | crontab -" | sudo -Hiu gvm tee -a /opt/gvm/cron.sh
-elif [ $GVMVERSION = "20" ] || [ $GVMVERSION = "21" ]; then
-    sudo -Hiu gvm echo "(crontab -l 2>/dev/null; echo \"${MINUTE} ${HOUR} * * * /opt/gvm/sbin/greenbone-feed-sync --type CERT\") | crontab -" | sudo -Hiu gvm tee -a /opt/gvm/cron.sh
-fi
+sudo -Hiu gvm echo "(crontab -l 2>/dev/null; echo \"${MINUTE} ${HOUR} * * * /opt/gvm/sbin/greenbone-feed-sync --type CERT\") | crontab -" | sudo -Hiu gvm tee -a /opt/gvm/cron.sh
+
 
 HOUR=$(shuf -i 0-23 -n 1)
 MINUTE=$(shuf -i 0-59 -n 1)
-if [ $GVMVERSION = "20" ] || [ $GVMVERSION = "21" ]; then
-    sudo -Hiu gvm echo "(crontab -l 2>/dev/null; echo \"${MINUTE} ${HOUR} * * * /opt/gvm/sbin/greenbone-feed-sync --type GVMD_DATA\") | crontab -" | sudo -Hiu gvm tee -a /opt/gvm/cron.sh
-fi
+sudo -Hiu gvm echo "(crontab -l 2>/dev/null; echo \"${MINUTE} ${HOUR} * * * /opt/gvm/sbin/greenbone-feed-sync --type GVMD_DATA\") | crontab -" | sudo -Hiu gvm tee -a /opt/gvm/cron.sh
+
 
 # I know this is kludgy as this should be run after the nvt sync but if it gets 
 # run once a day that should do
@@ -294,9 +253,7 @@ sudo -Hiu gvm echo "/opt/gvm/bin/gvm-manage-certs -a" | sudo -Hiu gvm tee -a /op
 su gvm -c "/opt/gvm/cron.sh"
 su gvm -c "rm /opt/gvm/cron.sh"
 
-#debug break here
-#exit 1
-# not sure why the below is failing when running straight through but working when I try to step though it manually could be a timing issue
+# not sure why the below is failing when running straight through but working when I try to step though it manually; could be a timing issue
 echo "Sleeping for 30 seconds..."
 sleep 30
 
@@ -308,10 +265,8 @@ sudo -Hiu gvm echo "export PKG_CONFIG_PATH=/opt/gvm/lib/pkgconfig:$PKG_CONFIG_PA
 
 # another difference here between Ubuntu and Debian
 # Debian needs the below to be 'python3.7' while Ubuntu 'python3.8'
-
 # going to just get the python3 version number and use it here. That should be better than trying
-# to account for the differences with the release ID. This'll be repeated multiple times.
-
+# to account for the differences with the release ID.
 PY3VER=`python3 --version | grep -o [0-9]\.[0-9]`
 sudo -Hiu gvm echo "mkdir -p /opt/gvm/lib/python$PY3VER/site-packages/" | sudo -Hiu gvm tee -a /opt/gvm/ospd.sh
 sudo -Hiu gvm echo "export PYTHONPATH=/opt/gvm/lib/python$PY3VER/site-packages" | sudo -Hiu gvm tee -a /opt/gvm/ospd.sh
@@ -331,23 +286,32 @@ su gvm -c "chmod u+x /opt/gvm/start.sh"
 PY3VER=`python3 --version | grep -o [0-9]\.[0-9]`
 sudo -Hiu gvm echo "export PYTHONPATH=/opt/gvm/lib/python$PY3VER/site-packages" | sudo -Hiu gvm tee -a /opt/gvm/start.sh
 
-# the line below is failing on Kali with a traceback; on Debian with file not found 
-# Kali:
-#Traceback (most recent call last):
-#  File "/opt/gvm/bin/ospd-openvas", line 33, in <module>
-#    sys.exit(load_entry_point('ospd-openvas==1.0.1', 'console_scripts', 'ospd-openvas')())
-#  File "/opt/gvm/bin/ospd-openvas", line 22, in importlib_load_entry_point
-#    for entry_point in distribution(dist_name).entry_points
-#  File "/usr/lib/python3.9/importlib/metadata.py", line 524, in distribution
-#    return Distribution.from_name(distribution_name)
-#  File "/usr/lib/python3.9/importlib/metadata.py", line 187, in from_name
-#    raise PackageNotFoundError(name)
-#importlib.metadata.PackageNotFoundError: ospd-openvas
+#############################################################
+# This next line is failing for me on Debian 10 
+# at least the first time it's run; if I run the line a second time it appears to work as expected
 #
-# Debian:
-# ERROR: get_db_connection: Not possible to run openvas. [Errno 2] No such file or directory: 'openvas': 'openvas'
+# I have no clue why it fails initially then works subsequently
+# We can work around this here by running the command twice but it'll 
+# be handled when the thing is rebooted after it's all bulit.
+#
+#Error in atexit._run_exitfuncs:
+#Traceback (most recent call last):
+#  File "/opt/gvm/lib/python3.7/site-packages/ospd-21.4.0-py3.7.egg/ospd/main.py", line 83, in exit_cleanup
+#  File "/opt/gvm/lib/python3.7/site-packages/ospd-21.4.0-py3.7.egg/ospd/server.py", line 233, in close
+#  File "/opt/gvm/lib/python3.7/site-packages/ospd-21.4.0-py3.7.egg/ospd/server.py", line 149, in close
+#AttributeError: 'NoneType' object has no attribute 'shutdown'
 
+#############################################################
 sudo -Hiu gvm echo "/usr/bin/python3 /opt/gvm/bin/ospd-openvas --pid-file /opt/gvm/var/run/ospd-openvas.pid --log-file /opt/gvm/var/log/gvm/ospd-openvas.log --lock-file-dir /opt/gvm/var/run -u /opt/gvm/var/run/ospd.sock" | sudo -Hiu gvm tee -a /opt/gvm/start.sh
+
+ID=`grep ^ID= /etc/os-release | sed 's/ID=//g'`
+if [[ $ID = "debian" ]] && [[ $GVMVERSION = "21" ]]; then
+    sudo -Hiu gvm echo "echo \"Trying again\"" | sudo -Hiu gvm tee -a /opt/gvm/start.sh
+    sudo -Hiu gvm echo "sleep 10" | sudo -Hiu gvm tee -a /opt/gvm/start.sh
+    sudo -Hiu gvm echo "echo \"Should be good now\"" | sudo -Hiu gvm tee -a /opt/gvm/start.sh
+    sudo -Hiu gvm echo "/usr/bin/python3 /opt/gvm/bin/ospd-openvas --pid-file /opt/gvm/var/run/ospd-openvas.pid --log-file /opt/gvm/var/log/gvm/ospd-openvas.log --lock-file-dir /opt/gvm/var/run -u /opt/gvm/var/run/ospd.sock" | sudo -Hiu gvm tee -a /opt/gvm/start.sh
+    sudo -Hiu gvm echo "echo Continuing" | sudo -Hiu gvm tee -a /opt/gvm/start.sh
+fi
 
 # Start GVM
 sudo -Hiu gvm echo "/opt/gvm/sbin/gvmd --osp-vt-update=/opt/gvm/var/run/ospd.sock" | sudo -Hiu gvm tee -a /opt/gvm/start.sh
@@ -380,13 +344,10 @@ sudo -Hiu gvm echo -e "/opt/gvm/sbin/gvmd --modify-scanner=UUID --scanner-host=/
 sudo -Hiu gvm echo "sleep 10" | sudo -Hiu gvm tee -a /opt/gvm/scan.sh
 sudo -Hiu gvm echo -e "/opt/gvm/sbin/gvmd --verify-scanner=UUID" | sed 's/UUID/\$UUID/g' | sudo -Hiu gvm tee -a /opt/gvm/scan.sh
 
-# Create OpenVAS (GVM 11) Admin
+# Create OpenVAS (GVM) Admin
 sudo -Hiu gvm echo -e "/opt/gvm/sbin/gvmd --create-user gvmadmin --password=StrongPass" | sudo -Hiu gvm tee -a /opt/gvm/scan.sh
 
-#if [ $GVMVERSION = "20" ]; then
-    # Update feed sync GVMD_Data enable
-    sudo -Hiu gvm echo -e "/opt/gvm/sbin/gvmd --get-users --verbose | cut -d \" \" -f 2 | xargs /opt/gvm/sbin/gvmd --modify-setting 78eceaec-3385-11ea-b237-28d24461215b --value " | sudo -Hiu gvm tee -a /opt/gvm/scan.sh
-#fi
+sudo -Hiu gvm echo -e "/opt/gvm/sbin/gvmd --get-users --verbose | cut -d \" \" -f 2 | xargs /opt/gvm/sbin/gvmd --modify-setting 78eceaec-3385-11ea-b237-28d24461215b --value " | sudo -Hiu gvm tee -a /opt/gvm/scan.sh
 
 su gvm -c "/opt/gvm/scan.sh"
 su gvm -c "rm /opt/gvm/scan.sh"
@@ -474,66 +435,32 @@ echo -e "\n" >> /etc/systemd/system/gsa.path
 echo "[Install]" >> /etc/systemd/system/gsa.path
 echo "WantedBy=multi-user.target" >> /etc/systemd/system/gsa.path
 
-
 systemctl daemon-reload
 systemctl enable --now openvas
 systemctl enable --now gvm.{path,service}
 systemctl enable --now gsa.{path,service}
 
-# Update GVM CERT and SCAP data from the feed servers
-#su gvm -c "touch /opt/gvm/feed.sh"
-#su gvm -c "chmod u+x /opt/gvm/feed.sh"
-
-# sleep statements have been added to the update scripts so the below should no longer be needed
-#sudo -Hiu gvm echo "echo Sleeping 5 minutes" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
-#sudo -Hiu gvm echo "echo More info can be found by searching greenbone-nvt-sync rsync connection refused on Google" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
-#sudo -Hiu gvm echo "sleep 300" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh # allow a NAT connection to close
-
-#sudo -Hiu gvm echo "echo Sleeping 2 minutes" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
-#sudo -Hiu gvm echo "echo More info can be found by searching greenbone-nvt-sync rsync connection refused on Google" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
-
-##sudo -Hiu gvm echo "/opt/gvm/sbin/greenbone-feed-sync --type SCAP" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
-
-#sudo -Hiu gvm echo "echo Sleeping 5 minutes" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
-#sudo -Hiu gvm echo "echo More info can be found by searching greenbone-nvt-sync rsync connection refused on Google" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
-#sudo -Hiu gvm echo "sleep 300" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh # allow a NAT connection to close
-
-##sudo -Hiu gvm echo "/opt/gvm/sbin/greenbone-feed-sync --type GVMD_DATA" | sudo -Hiu gvm tee -a /opt/gvm/feed.sh
-
-
-
-#debug
-# disable feed updates
+# Update data from the feed servers
 ##############################################################################
-# update NVT feed
-su gvm -c /opt/gvm/bin/greenbone-nvt-sync
-/opt/gvm/sbin/openvas --update-vt-info
-# give the db a chance to update
-echo "Sleeping for 5 minutes to let the DB finish the NVT update"
-sleep 300
-
-# update GVMD_DATA
-su gvm -c "/opt/gvm/sbin/greenbone-feed-sync --type GVMD_DATA"
-echo "Sleeping for 5 minutes to let the DB finish the GVMD_DATA update"
-sleep 300
-
-# update SCAP
-su gvm -c "/opt/gvm/sbin/greenbone-feed-sync --type SCAP"
-echo "Sleeping for 5 minutes to let the DB finish the SCAP update"
-sleep 300
-
-# update CERT
-su gvm -c "/opt/gvm/sbin/greenbone-feed-sync --type CERT"
-echo "Sleeping for 5 minutes to let the DB finish the CERT update"
-sleep 300
+##update NVT feed
+#su gvm -c /opt/gvm/bin/greenbone-nvt-sync
+#/opt/gvm/sbin/openvas --update-vt-info
+## give the db a chance to update
+#echo "Sleeping for 5 minutes to let the DB finish the NVT update"
+#sleep 300
+## update GVMD_DATA
+#su gvm -c "/opt/gvm/sbin/greenbone-feed-sync --type GVMD_DATA"
+#echo "Sleeping for 5 minutes to let the DB finish the GVMD_DATA update"
+#sleep 300
+## update SCAP
+#su gvm -c "/opt/gvm/sbin/greenbone-feed-sync --type SCAP"
+#echo "Sleeping for 5 minutes to let the DB finish the SCAP update"
+#sleep 300
+## update CERT
+#su gvm -c "/opt/gvm/sbin/greenbone-feed-sync --type CERT"
+#echo "Sleeping for 5 minutes to let the DB finish the CERT update"
+#sleep 300
 ############################################################################
-
-
-
-
-#su gvm -c "/opt/gvm/feed.sh"
-#su gvm -c "rm /opt/gvm/feed.sh"
-
 
 # REMIND USER TO CHANGE DEFAULT PASSWORD
 echo "The installation is done, but there may still be an update in progress."
