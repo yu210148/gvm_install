@@ -348,11 +348,14 @@ sudo -Hiu gvm echo "export PYTHONPATH=/opt/gvm/lib/python$PY3VER/site-packages" 
 # Debian:
 # ERROR: get_db_connection: Not possible to run openvas. [Errno 2] No such file or directory: 'openvas': 'openvas'
 
+#############################################################
 # TODO: this next line is failing for me on Debian 10 
 # at least the first time it's run; if I run the line a second time it appears to work as expected
 #
-#############################################################
-
+# I have no clue why it fails initially then works subsequently
+# We can work around this here by running the command twice but it'll 
+# be handled when the thing is rebooted after it's all bulit.
+#
 #Error in atexit._run_exitfuncs:
 #Traceback (most recent call last):
 #  File "/opt/gvm/lib/python3.7/site-packages/ospd-21.4.0-py3.7.egg/ospd/main.py", line 83, in exit_cleanup
@@ -362,6 +365,13 @@ sudo -Hiu gvm echo "export PYTHONPATH=/opt/gvm/lib/python$PY3VER/site-packages" 
 
 #############################################################
 sudo -Hiu gvm echo "/usr/bin/python3 /opt/gvm/bin/ospd-openvas --pid-file /opt/gvm/var/run/ospd-openvas.pid --log-file /opt/gvm/var/log/gvm/ospd-openvas.log --lock-file-dir /opt/gvm/var/run -u /opt/gvm/var/run/ospd.sock" | sudo -Hiu gvm tee -a /opt/gvm/start.sh
+
+ID=`grep ^ID= /etc/os-release | sed 's/ID=//g'`
+if [[ $ID = "debian" ]]; then
+    sudo -Hiu gvm echo "echo \"Trying again\"" | sudo -Hiu gvm tee -a /opt/gvm/start.sh
+    sudo -Hiu gvm echo "sleep 10" | sudo -Hiu gvm tee -a /opt/gvm/start.sh
+    sudo -Hiu gvm echo "/usr/bin/python3 /opt/gvm/bin/ospd-openvas --pid-file /opt/gvm/var/run/ospd-openvas.pid --log-file /opt/gvm/var/log/gvm/ospd-openvas.log --lock-file-dir /opt/gvm/var/run -u /opt/gvm/var/run/ospd.sock" | sudo -Hiu gvm tee -a /opt/gvm/start.sh
+fi
 
 # Start GVM
 sudo -Hiu gvm echo "/opt/gvm/sbin/gvmd --osp-vt-update=/opt/gvm/var/run/ospd.sock" | sudo -Hiu gvm tee -a /opt/gvm/start.sh
