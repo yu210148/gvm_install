@@ -11,7 +11,8 @@ sudo ./install_gvm.sh
 ```
 
 Debian:
-* Note, I had an issue when testing GVM version 20 on Debian where nmap wasn't detected. I don't have a resolution for this at the moment so if you select version 20 on Debian stable you may run into issues. If you have any idea how to fix this please let me know. This doesn't seem to affect GVM version 21.
+* Note, I had an issue when testing GVM version 20 on Debian where nmap wasn't detected. I don't have a resolution for this at the moment so if you select version 20 on Debian stable you may run into issues. If you have any idea how to fix this please let me know. This doesn't seem to affect GVM version 21. 
+* There have been some reports of output lacking results on Ubuntu systems with GVM version 21. This appears to be because the scanner fails to use the installed nmap for port scanning. See <a href=https://github.com/yu210148/gvm_install/issues/48>Issue #48</a> and <a href=https://github.com/yu210148/gvm_install/issues/26#issuecomment-758717805>Issue #26 (comment)</a> for more info and how to manually add it.
 
 ```
 apt install sudo
