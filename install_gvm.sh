@@ -12,6 +12,8 @@
 # Licensed under GPLv3 or later
 ######################################################################
 
+set -x
+
 print_help () {
     printf "options:\n"
     printf "    -v | --version -- supported versions are 20|21\n"
@@ -62,7 +64,7 @@ if [[ $GVMVERSION = "21" ]] || [[ $GVMVERSION = "20" ]]; then
 else 
     echo "Sorry, I didn't understand the input $GVMVERSION."
     echo "Please re-run install_gvm.sh and enter a version number at the prompt"
-    exit 1
+    print_help
 fi
 
 apt-get update
@@ -138,43 +140,32 @@ if [[ $ID = "debian" ]] || [[ $ID = "kali" ]]; then
     touch /root/.hushlogin
 fi
 
-# TODO should refactor this to write out a script for the gvm user to execute like the ones later in 
-# this script leaving .bashrc alone. I initially used .bashrc just because it was automatically
-# executed when switching to the gvm user.
-sudo -Hiu gvm touch /opt/gvm/.bashrc
-sudo -Hiu gvm mv /opt/gvm/.bashrc /opt/gvm/.bashrc.bak # save original bashrc file 
-sudo -Hiu gvm touch /opt/gvm/.bashrc
-sudo -Hiu gvm echo "export PKG_CONFIG_PATH=/opt/gvm/lib/pkgconfig:$PKG_CONFIG_PATH" | sudo -Hiu gvm tee -a /opt/gvm/.bashrc
+
+export PKG_CONFIG_PATH=/opt/gvm/lib/pkgconfig:$PKG_CONFIG_PATH
 
 # Build and Install GVM Libraries
-sudo -Hiu gvm echo "cd /opt/gvm/gvm-libs" | sudo -Hiu gvm tee -a /opt/gvm/.bashrc
-sudo -Hiu gvm echo "mkdir build" | sudo -Hiu gvm tee -a /opt/gvm/.bashrc
-sudo -Hiu gvm echo "cd build" | sudo -Hiu gvm tee -a /opt/gvm/.bashrc
-sudo -Hiu gvm echo "cmake .. -DCMAKE_INSTALL_PREFIX=/opt/gvm" | sudo -Hiu gvm tee -a /opt/gvm/.bashrc
-sudo -Hiu gvm echo "make" | sudo -Hiu gvm tee -a /opt/gvm/.bashrc
-sudo -Hiu gvm echo "make install" | sudo -Hiu gvm tee -a /opt/gvm/.bashrc
+sudo -E -u gvm mkdir -p /opt/gvm/gvm-libs/build
+cd /opt/gvm/gvm-libs/build
+sudo -u gvm cmake .. -DCMAKE_INSTALL_PREFIX=/opt/gvm
+sudo -u gvm make
+sudo -u gvm make install
 
 # Build and Install OpenVAS and OpenVAS SMB
-sudo -Hiu gvm echo "cd ../../openvas-smb/" | sudo -Hiu gvm tee -a /opt/gvm/.bashrc
-sudo -Hiu gvm echo "mkdir build" | sudo -Hiu gvm tee -a /opt/gvm/.bashrc
-sudo -Hiu gvm echo "cd build" | sudo -Hiu gvm tee -a /opt/gvm/.bashrc
-sudo -Hiu gvm echo "cmake .. -DCMAKE_INSTALL_PREFIX=/opt/gvm" | sudo -Hiu gvm tee -a /opt/gvm/.bashrc
-sudo -Hiu gvm echo "make" | sudo -Hiu gvm tee -a /opt/gvm/.bashrc
-sudo -Hiu gvm echo "make install" | sudo -Hiu gvm tee -a /opt/gvm/.bashrc
-sudo -Hiu gvm echo "cd ../../openvas" | sudo -Hiu gvm tee -a /opt/gvm/.bashrc
-sudo -Hiu gvm echo "mkdir build" | sudo -Hiu gvm tee -a /opt/gvm/.bashrc
-sudo -Hiu gvm echo "cd build" | sudo -Hiu gvm tee -a /opt/gvm/.bashrc
-sudo -Hiu gvm echo "cmake .. -DCMAKE_INSTALL_PREFIX=/opt/gvm" | sudo -Hiu gvm tee -a /opt/gvm/.bashrc
-sudo -Hiu gvm echo "make" | sudo -Hiu gvm tee -a /opt/gvm/.bashrc
-sudo -Hiu gvm echo "make install" | sudo -Hiu gvm tee -a /opt/gvm/.bashrc
-sudo -Hiu gvm echo "sed -i 's/set (CMAKE_C_FLAGS_DEBUG\s.*\"\${CMAKE_C_FLAGS_DEBUG} \${COVERAGE_FLAGS}\")/set (CMAKE_C_FLAGS_DEBUG \"\${CMAKE_C_FLAGS_DEBUG} -Werror -Wno-error=deprecated-declarations\")/g' ../../openvas/CMakeLists.txt" | sudo -Hiu gvm tee -a /opt/gvm/.bashrc
-sudo -Hiu gvm echo "make" | sudo -Hiu gvm tee -a /opt/gvm/.bashrc
-sudo -Hiu gvm echo "make install" | sudo -Hiu gvm tee -a /opt/gvm/.bashrc
-# Leave gvm environment and clean up
-sudo -Hiu gvm echo "exit" | sudo -Hiu gvm tee -a /opt/gvm/.bashrc
-su gvm
-sudo -Hiu gvm rm /opt/gvm/.bashrc
-sudo -Hiu gvm mv /opt/gvm/.bashrc.bak /opt/gvm/.bashrc
+cd /opt/gvm/openvas-smb/
+sudo -u gvm mkdir -p /opt/gvm/openvas-smb/build
+cd /opt/gvm/openvas-smb/build
+sudo -u gvm cmake .. -DCMAKE_INSTALL_PREFIX=/opt/gvm
+sudo -u gvm make
+sudo -u gvm make install
+cd /opt/gvm/openvas
+sudo -u gvm mkdir -p /opt/gvm/openvas/build
+cd /opt/gvm/openvas/build
+sudo -u gvm cmake .. -DCMAKE_INSTALL_PREFIX=/opt/gvm
+sudo -u gvm make
+sudo -u gvm make install
+sudo -u gvm sed -i 's/set (CMAKE_C_FLAGS_DEBUG\s.*\"\${CMAKE_C_FLAGS_DEBUG} \${COVERAGE_FLAGS}\")/set (CMAKE_C_FLAGS_DEBUG \"\${CMAKE_C_FLAGS_DEBUG} -Werror -Wno-error=deprecated-declarations\")/g' /opt/gvm/openvas/CMakeLists.txt
+sudo -u gvm make
+sudo -u gvm make install
 
 # Configuring OpenVAS
 ldconfig
