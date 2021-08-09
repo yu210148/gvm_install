@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 ######################################################################
 # Script to install Greenbone/OpenVAS on Ubuntu 20.04 or Debian 10
 #
@@ -12,10 +12,51 @@
 # Licensed under GPLv3 or later
 ######################################################################
 
-# Find out which version to install from user
-read -p "Would you like to install version 20 or 21? " GVMVERSION
+print_help () {
+    printf "options:\n"
+    printf "    -v | --version -- supported versions are 20|21\n"
+    printf "    -h | --help -- displays this\n"
 
-#validate input
+    printf "\nexamples:\n"
+    printf "    ${0} -v 21\n"
+
+    exit 1
+}
+
+###################################
+# HANDLE CLI PARAMETERS
+###################################
+POSITIONAL=()
+while [[ $# -gt 0 ]]
+do
+    key="$1"
+
+    case $key in
+        -v|--version)
+        GVMVERSION="$2"
+        shift # past argument
+        shift # past value
+        ;;
+        -h|--help)
+        print_help
+        shift # past value
+        ;;
+        *)    # unknown option
+        POSITIONAL+=("$1") # save it in an array for later
+        shift # past argument
+        ;;
+    esac
+done
+
+###################################
+# VALIDATE INPUT
+###################################
+if [[ -z "${GVMVERSION}" ]]
+then
+  printf "you must provide a version number to install\n"
+  print_help
+fi
+
 if [[ $GVMVERSION = "21" ]] || [[ $GVMVERSION = "20" ]]; then
     echo "Okay, installing version $GVMVERSION"
 else 
@@ -23,8 +64,6 @@ else
     echo "Please re-run install_gvm.sh and enter a version number at the prompt"
     exit 1
 fi
-
-#GVMVERSION='21'
 
 apt-get update
 apt-get upgrade -y 
