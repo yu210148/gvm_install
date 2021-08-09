@@ -12,6 +12,8 @@
 # Licensed under GPLv3 or later
 ######################################################################
 
+set -x
+
 print_help () {
     printf "options:\n"
     printf "    -v | --version -- supported versions are 20|21\n"
