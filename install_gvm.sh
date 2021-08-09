@@ -141,32 +141,31 @@ if [[ $ID = "debian" ]] || [[ $ID = "kali" ]]; then
 fi
 
 
-sudo -Hiu gvm export PKG_CONFIG_PATH=/opt/gvm/lib/pkgconfig:$PKG_CONFIG_PATH
+export PKG_CONFIG_PATH=/opt/gvm/lib/pkgconfig:$PKG_CONFIG_PATH
 
 # Build and Install GVM Libraries
-cd /opt/gvm/gvm-libs
-sudo -Hiu gvm mkdir build
-cd build
-sudo -Hiu gvm cmake .. -DCMAKE_INSTALL_PREFIX=/opt/gvm
-sudo -Hiu gvm make
-sudo -Hiu gvm make install
+sudo -E -u gvm mkdir -p /opt/gvm/gvm-libs/build
+cd /opt/gvm/gvm-libs/build
+sudo -u gvm cmake .. -DCMAKE_INSTALL_PREFIX=/opt/gvm
+sudo -u gvm make
+sudo -u gvm make install
 
 # Build and Install OpenVAS and OpenVAS SMB
-cd ../../openvas-smb/
-sudo -Hiu gvm mkdir build
-cd build
-sudo -Hiu gvm cmake .. -DCMAKE_INSTALL_PREFIX=/opt/gvm
-sudo -Hiu gvm make
-sudo -Hiu gvm make install
-cd ../../openvas
-sudo -Hiu gvm mkdir build
-cd build
-sudo -Hiu gvm cmake .. -DCMAKE_INSTALL_PREFIX=/opt/gvm
-sudo -Hiu gvm make
-sudo -Hiu gvm make install
-sudo -Hiu gvm sed -i 's/set (CMAKE_C_FLAGS_DEBUG\s.*\"\${CMAKE_C_FLAGS_DEBUG} \${COVERAGE_FLAGS}\")/set (CMAKE_C_FLAGS_DEBUG \"\${CMAKE_C_FLAGS_DEBUG} -Werror -Wno-error=deprecated-declarations\")/g' ../../openvas/CMakeLists.txt
-sudo -Hiu gvm make
-sudo -Hiu gvm make install
+cd /opt/gvm/openvas-smb/
+sudo -u gvm mkdir -p /opt/gvm/openvas-smb/build
+cd /opt/gvm/openvas-smb/build
+sudo -u gvm cmake .. -DCMAKE_INSTALL_PREFIX=/opt/gvm
+sudo -u gvm make
+sudo -u gvm make install
+cd /opt/gvm/openvas
+sudo -u gvm mkdir -p /opt/gvm/openvas/build
+cd /opt/gvm/openvas/build
+sudo -u gvm cmake .. -DCMAKE_INSTALL_PREFIX=/opt/gvm
+sudo -u gvm make
+sudo -u gvm make install
+sudo -u gvm sed -i 's/set (CMAKE_C_FLAGS_DEBUG\s.*\"\${CMAKE_C_FLAGS_DEBUG} \${COVERAGE_FLAGS}\")/set (CMAKE_C_FLAGS_DEBUG \"\${CMAKE_C_FLAGS_DEBUG} -Werror -Wno-error=deprecated-declarations\")/g' /opt/gvm/openvas/CMakeLists.txt
+sudo -u gvm make
+sudo -u gvm make install
 
 # Configuring OpenVAS
 ldconfig
