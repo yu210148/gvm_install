@@ -38,7 +38,7 @@ do
         shift # past value
         ;;
         -h|--help)
-            print_help
+        print_help
         shift # past value
         ;;
         *)    # unknown option
