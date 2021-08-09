@@ -144,7 +144,7 @@ fi
 sudo -Hiu gvm export PKG_CONFIG_PATH=/opt/gvm/lib/pkgconfig:$PKG_CONFIG_PATH
 
 # Build and Install GVM Libraries
-sudo -Hiu gvm cd /opt/gvm/gvm-libs
+cd /opt/gvm/gvm-libs
 sudo -Hiu gvm mkdir build
 cd build
 sudo -Hiu gvm cmake .. -DCMAKE_INSTALL_PREFIX=/opt/gvm
