@@ -146,21 +146,21 @@ sudo -Hiu gvm export PKG_CONFIG_PATH=/opt/gvm/lib/pkgconfig:$PKG_CONFIG_PATH
 # Build and Install GVM Libraries
 sudo -Hiu gvm cd /opt/gvm/gvm-libs
 sudo -Hiu gvm mkdir build
-sudo -Hiu gvm cd build
+cd build
 sudo -Hiu gvm cmake .. -DCMAKE_INSTALL_PREFIX=/opt/gvm
 sudo -Hiu gvm make
 sudo -Hiu gvm make install
 
 # Build and Install OpenVAS and OpenVAS SMB
-sudo -Hiu gvm cd ../../openvas-smb/
+cd ../../openvas-smb/
 sudo -Hiu gvm mkdir build
-sudo -Hiu gvm cd build
+cd build
 sudo -Hiu gvm cmake .. -DCMAKE_INSTALL_PREFIX=/opt/gvm
 sudo -Hiu gvm make
 sudo -Hiu gvm make install
-sudo -Hiu gvm cd ../../openvas
+cd ../../openvas
 sudo -Hiu gvm mkdir build
-sudo -Hiu gvm cd build
+cd build
 sudo -Hiu gvm cmake .. -DCMAKE_INSTALL_PREFIX=/opt/gvm
 sudo -Hiu gvm make
 sudo -Hiu gvm make install
