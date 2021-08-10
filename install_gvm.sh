@@ -16,14 +16,21 @@ set -x
 
 print_help () {
     printf "options:\n"
-    printf "    -v | --version -- supported versions are 20|21\n"
-    printf "    -h | --help -- displays this\n"
+    printf "    -v  | --version -- supported versions are 20|21\n"
+    printf "    -sF | --skip-feed -- skip feed refreshes\n"
+    printf "    -h  | --help -- displays this\n"
 
     printf "\nexamples:\n"
     printf "    ${0} -v 21\n"
 
     exit 1
 }
+
+###################################
+# DEFAULT VALUES
+###################################
+SKIPFEED=0
+
 
 ###################################
 # HANDLE CLI PARAMETERS
@@ -38,6 +45,10 @@ do
         GVMVERSION="$2"
         shift # past argument
         shift # past value
+        ;;
+        -sF|--skip-feed)
+        SKIPFEED=1
+        shift
         ;;
         -h|--help)
         print_help
@@ -472,24 +483,23 @@ systemctl enable --now gsa.{path,service}
 
 # Update data from the feed servers
 ##############################################################################
-#update NVT feed
-su gvm -c /opt/gvm/bin/greenbone-nvt-sync
+
+if [[ ${SKIPFEED} -eq 0 ]]
+then
+    #update NVT feed
+    su gvm -c /opt/gvm/bin/greenbone-nvt-sync
+    
+    # update GVMD_DATA
+    su gvm -c "/opt/gvm/sbin/greenbone-feed-sync --type GVMD_DATA"
+    
+    # update SCAP
+    su gvm -c "/opt/gvm/sbin/greenbone-feed-sync --type SCAP"
+    
+    # update CERT
+    su gvm -c "/opt/gvm/sbin/greenbone-feed-sync --type CERT"
+fi
+
 /opt/gvm/sbin/openvas --update-vt-info
-# give the db a chance to update
-echo "Sleeping for 5 minutes to let the DB finish the NVT update"
-sleep 300
-# update GVMD_DATA
-su gvm -c "/opt/gvm/sbin/greenbone-feed-sync --type GVMD_DATA"
-echo "Sleeping for 5 minutes to let the DB finish the GVMD_DATA update"
-sleep 300
-# update SCAP
-su gvm -c "/opt/gvm/sbin/greenbone-feed-sync --type SCAP"
-echo "Sleeping for 5 minutes to let the DB finish the SCAP update"
-sleep 300
-# update CERT
-su gvm -c "/opt/gvm/sbin/greenbone-feed-sync --type CERT"
-echo "Sleeping for 5 minutes to let the DB finish the CERT update"
-sleep 300
 ############################################################################
 
 # REMIND USER TO CHANGE DEFAULT PASSWORD
