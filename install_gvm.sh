@@ -34,14 +34,6 @@ print_help () {
 
 
 ###################################
-# BEING ROOT IS MANDATORY
-###################################
-if [ "$EUID" -ne 0 ]
-  then echo "Please run as root"
-  exit
-fi
-
-###################################
 # HANDLE CLI PARAMETERS
 ###################################
 POSITIONAL=()
