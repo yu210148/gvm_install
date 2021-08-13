@@ -12,9 +12,18 @@
 # Licensed under GPLv3 or later
 ######################################################################
 
+###################################
+# SET SOME VARS INITIAL VALUES
+###################################
+UFW=false
+
+###################################
+# SCRIPT FUNCTIONS
+###################################
 print_help () {
     printf "options:\n"
     printf "    -v | --version -- supported versions are 20|21\n"
+    printf "    -u | --ufw  -- enable ufw and open ports 22,443"
     printf "    -h | --help -- displays this\n"
 
     printf "\nexamples:\n"
@@ -44,6 +53,10 @@ do
         -v|--version)
         GVMVERSION="$2"
         shift # past argument
+        shift # past value
+        ;;
+        -u|--ufw)
+        UFW=true
         shift # past value
         ;;
         -h|--help)
@@ -404,10 +417,12 @@ su gvm -c "rm /opt/gvm/scan.sh"
 # all the full paths above you could put "export PATH=$PATH:/opt/gvm/bin:/opt/gvm/sbin" at 
 # the start of the above scripts. Not sure which is a better solution.
 
-# Set firewall to allow access on port 443 and 22
-ufw allow 443
-ufw allow 22
-ufw --force enable
+if $UFW ; then
+    # Set firewall to allow access on port 443 and 22
+    ufw allow 443
+    ufw allow 22
+    ufw --force enable
+fi
 
 # Create systemd services for OpenVAS Scanner, GSA, and GVM services
 echo "[Unit]" > /etc/systemd/system/openvas.service
