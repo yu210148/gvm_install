@@ -16,6 +16,7 @@
 # SET SOME VARS INITIAL VALUES
 ###################################
 UFW=false
+API=false
 
 ###################################
 # SCRIPT FUNCTIONS
@@ -23,7 +24,8 @@ UFW=false
 print_help () {
     printf "options:\n"
     printf "    -v | --version -- supported versions are 20|21\n"
-    printf "    -u | --ufw  -- enable ufw and open ports 22,443"
+    printf "    -a | --api  -- Install and configure gsa api\n"
+    printf "    -u | --ufw  -- enable ufw and open ports 22,443\n"
     printf "    -h | --help -- displays this\n"
 
     printf "\nexamples:\n"
@@ -54,6 +56,10 @@ do
         -v|--version)
         GVMVERSION="$2"
         shift # past argument
+        shift # past value
+        ;;
+        -a|--api)
+        API=true
         shift # past value
         ;;
         -u|--ufw)
@@ -503,6 +509,34 @@ systemctl daemon-reload
 systemctl enable --now openvas
 systemctl enable --now gvm.{path,service}
 systemctl enable --now gsa.{path,service}
+
+
+# Install the API
+##############################################################################
+if $API ; then
+    apt -y install socat
+    
+    # add gmp user
+    adduser --gecos "" --shell /bin/sh --disabled-password --home /opt/gmp gmp
+    adduser gmp gvm
+    passwd -d gmp
+    
+    # enable Passwordless login. It's an requirement for gmp, but makes your sshd config little less secure !!
+    sed -i 's/auth\t\[success=1 default=ignore]\t\tpam_unix.so nullok_secure/# auth\t[success=1 default=ignore]\t\tpam_unix.so nullok_secure\nauth\t[success=1 default=ignore]\t\tpam_unix.so nullok\n/' /etc/pam.d/common-auth 
+
+    # configure ssh 
+    echo "PermitEmptyPasswords no" >> /etc/ssh/sshd_config
+    echo "Match User gmp" >> /etc/ssh/sshd_config
+    echo "    AllowUsers gmp" >> /etc/ssh/sshd_config
+    echo "    AllowGroups gvm" >> /etc/ssh/sshd_config
+    echo "    PermitEmptyPasswords yes" >> /etc/ssh/sshd_config
+    echo "    ForceCommand /usr/bin/socat STDIO UNIX-CONNECT:/opt/gvm/var/run/gvmd.sock" >> /etc/ssh/sshd_config
+    systemctl restart sshd
+
+    # install gvm tools
+    su gmp -c "pip3 install --user gvm-tools"
+fi
+
 
 # Update data from the feed servers
 ##############################################################################
