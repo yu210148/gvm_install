@@ -7,7 +7,7 @@ Ubuntu:
 ```
 wget https://raw.githubusercontent.com/yu210148/gvm_install/master/install_gvm.sh
 chmod +x install_gvm.sh
-sudo ./install_gvm.sh 
+sudo ./install_gvm.sh -v 21
 ```
 
 Debian:
