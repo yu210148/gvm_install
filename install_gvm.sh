@@ -146,15 +146,26 @@ if [ $GVMVERSION = "20" ]; then
     sudo -Hiu gvm git clone https://github.com/greenbone/python-gvm.git
     sudo -Hiu gvm git clone https://github.com/greenbone/gvm-tools.git
 elif [ $GVMVERSION = "21" ]; then
-    sudo -Hiu gvm git clone -b v21.4.1 https://github.com/greenbone/gvm-libs.git
+    sudo -Hiu gvm git clone -b v21.4.3 https://github.com/greenbone/gvm-libs.git
     sudo -Hiu gvm git clone -b v21.4.0 https://github.com/greenbone/openvas-smb.git
-    sudo -Hiu gvm git clone -b v21.4.1 https://github.com/greenbone/openvas.git
-    sudo -Hiu gvm git clone -b v21.4.1 https://github.com/greenbone/ospd.git
-    sudo -Hiu gvm git clone -b v21.4.1 https://github.com/greenbone/ospd-openvas.git
-    sudo -Hiu gvm git clone -b v21.4.2 https://github.com/greenbone/gvmd.git
-    sudo -Hiu gvm git clone -b v21.4.1 https://github.com/greenbone/gsa.git
-    sudo -Hiu gvm git clone -b v21.6.0 https://github.com/greenbone/python-gvm.git
-    sudo -Hiu gvm git clone -b v21.6.1 https://github.com/greenbone/gvm-tools.git
+    sudo -Hiu gvm git clone -b v21.4.3 https://github.com/greenbone/openvas.git
+    sudo -Hiu gvm git clone -b v21.4.3 https://github.com/greenbone/ospd.git
+    sudo -Hiu gvm git clone -b v21.4.3 https://github.com/greenbone/ospd-openvas.git
+    sudo -Hiu gvm git clone -b v21.4.4 https://github.com/greenbone/gvmd.git
+    sudo -Hiu gvm git clone -b v21.4.3 https://github.com/greenbone/gsa.git
+    sudo -Hiu gvm git clone -b v21.10.0 https://github.com/greenbone/python-gvm.git
+    sudo -Hiu gvm git clone -b v21.10.0 https://github.com/greenbone/gvm-tools.git
+    
+    #Old Versions here
+    #sudo -Hiu gvm git clone -b v21.4.1 https://github.com/greenbone/gvm-libs.git
+    #sudo -Hiu gvm git clone -b v21.4.0 https://github.com/greenbone/openvas-smb.git
+    #sudo -Hiu gvm git clone -b v21.4.1 https://github.com/greenbone/openvas.git
+    #sudo -Hiu gvm git clone -b v21.4.1 https://github.com/greenbone/ospd.git
+    #sudo -Hiu gvm git clone -b v21.4.1 https://github.com/greenbone/ospd-openvas.git
+    #sudo -Hiu gvm git clone -b v21.4.2 https://github.com/greenbone/gvmd.git
+    #sudo -Hiu gvm git clone -b v21.4.1 https://github.com/greenbone/gsa.git
+    #sudo -Hiu gvm git clone -b v21.6.0 https://github.com/greenbone/python-gvm.git
+    #sudo -Hiu gvm git clone -b v21.6.1 https://github.com/greenbone/gvm-tools.git
 fi
 
 sudo -Hiu gvm cp --recursive /opt/gvm/* /tmp/gvm-source/
