@@ -1,6 +1,10 @@
 # gvm_install
 A script to install GVM 20 / 21 on Ubuntu 20.04
 
+WARNING 2021-11-16
+Please see issue #61 and #62 before attempting to use this.
+
+
 Usage:
 
 Ubuntu:
