@@ -435,7 +435,8 @@ sudo -Hiu gvm echo -e "/opt/gvm/sbin/gvmd --verify-scanner=UUID" | sed 's/UUID/\
 # Create OpenVAS (GVM) Admin
 sudo -Hiu gvm echo -e "/opt/gvm/sbin/gvmd --create-user gvmadmin --password=StrongPass" | sudo -Hiu gvm tee -a /opt/gvm/scan.sh
 
-sudo -Hiu gvm echo -e "/opt/gvm/sbin/gvmd --get-users --verbose | grep admin | awk '{print $2}' | xargs /opt/gvm/sbin/gvmd --modify-setting 78eceaec-3385-11ea-b237-28d24461215b --value " | sudo -Hiu gvm tee -a /opt/gvm/scan.sh
+sudo -Hiu gvm echo -e "UUID=\$(/opt/gvm/sbin/gvmd --get-users --verbose | grep admin | awk '{print \$\2}')" | sed 's/\\//g'  | sudo -Hiu gvm tee -a /opt/gvm/scan.sh
+sudo -Hiu gvm echo -e "/opt/gvm/sbin/gvmd --modify-setting 78eceaec-3385-11ea-b237-28d24461215b --value UUID" | sed 's/UUID/\$UUID/g' | sudo -Hiu gvm tee -a /opt/gvm/scan.sh
 
 su gvm -c "/opt/gvm/scan.sh"
 su gvm -c "rm /opt/gvm/scan.sh"
