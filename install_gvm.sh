@@ -516,7 +516,7 @@ echo "User=gvm" >> /etc/systemd/system/gsa.service
 echo "Group=gvm" >> /etc/systemd/system/gsa.service
 echo "Environment=PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/opt/gvm/bin:/opt/gvm/sbin:/opt/gvm/.local/bin" >> /etc/systemd/system/gsa.service
 echo "Environment=PYTHONPATH=/opt/gvm/lib/python$PY3VER/site-packages" >> /etc/systemd/system/gsa.service
-echo -e "ExecStart=/usr/bin/sudo /opt/gvm/sbin/gsad" >> /etc/systemd/system/gsa.service
+echo -e "ExecStart=/usr/bin/sudo /opt/gvm/sbin/gsad --gnutls-priorities=SECURE128:-AES-128-CBC:-CAMELLIA-128-CBC:-VERS-SSL3.0:-VERS-TLS1.0:-VERS-TLS1.1" >> /etc/systemd/system/gsa.service
 echo "RemainAfterExit=yes" >> /etc/systemd/system/gsa.service
 echo -e "\n" >> /etc/systemd/system/gsa.service
 echo "[Install]" >> /etc/systemd/system/gsa.service
