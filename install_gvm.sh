@@ -146,26 +146,32 @@ if [ $GVMVERSION = "20" ]; then
     sudo -Hiu gvm git clone https://github.com/greenbone/python-gvm.git
     sudo -Hiu gvm git clone https://github.com/greenbone/gvm-tools.git
 elif [ $GVMVERSION = "21" ]; then
-    #sudo -Hiu gvm git clone -b v21.4.3 https://github.com/greenbone/gvm-libs.git
-    #sudo -Hiu gvm git clone -b v21.4.0 https://github.com/greenbone/openvas-smb.git
-    #sudo -Hiu gvm git clone -b v21.4.3 https://github.com/greenbone/openvas.git
-    #sudo -Hiu gvm git clone -b v21.4.3 https://github.com/greenbone/ospd.git
-    #sudo -Hiu gvm git clone -b v21.4.3 https://github.com/greenbone/ospd-openvas.git
-    #sudo -Hiu gvm git clone -b v21.4.4 https://github.com/greenbone/gvmd.git
-    #sudo -Hiu gvm git clone -b v21.4.3 https://github.com/greenbone/gsa.git
-    #sudo -Hiu gvm git clone -b v21.10.0 https://github.com/greenbone/python-gvm.git
-    #sudo -Hiu gvm git clone -b v21.10.0 https://github.com/greenbone/gvm-tools.git
-    
-    #Old Versions here
-    sudo -Hiu gvm git clone -b v21.4.1 https://github.com/greenbone/gvm-libs.git
-    sudo -Hiu gvm git clone -b v21.4.0 https://github.com/greenbone/openvas-smb.git
-    sudo -Hiu gvm git clone -b v21.4.1 https://github.com/greenbone/openvas.git
-    sudo -Hiu gvm git clone -b v21.4.1 https://github.com/greenbone/ospd.git
-    sudo -Hiu gvm git clone -b v21.4.1 https://github.com/greenbone/ospd-openvas.git
-    sudo -Hiu gvm git clone -b v21.4.2 https://github.com/greenbone/gvmd.git
-    sudo -Hiu gvm git clone -b v21.4.1 https://github.com/greenbone/gsa.git
-    sudo -Hiu gvm git clone -b v21.6.0 https://github.com/greenbone/python-gvm.git
-    sudo -Hiu gvm git clone -b v21.6.1 https://github.com/greenbone/gvm-tools.git
+    export GVM_VERSION=21.4.4
+    export GVM_LIBS_VERSION=$GVM_VERSION
+    export GVMD_VERSION=21.4.5
+    export GSA_VERSION=$GVM_VERSION
+    export OPENVAS_SMB_VERSION=21.4.0
+    export OPENVAS_SCANNER_VERSION=$GVM_VERSION
+    export OSPD_VERSION=21.4.4
+    export OSPD_OPENVAS_VERSION=$GVM_VERSION
+    export GSAD_VERSION=$GVM_VERSION
+    sudo -Hiu gvm curl -f -L https://github.com/greenbone/gvm-libs/archive/refs/tags/v$GVM_LIBS_VERSION.tar.gz -o gvm-libs-$GVM_LIBS_VERSION.tar.gz
+    sudo -Hiu gvm tar zxvf gvm-libs-$GVM_LIBS_VERSION.tar.gz
+    sudo -Hiu gvm curl -f -L https://github.com/greenbone/gvmd/archive/refs/tags/v$GVMD_VERSION.tar.gz -o gvmd-$GVMD_VERSION.tar.gz
+    sudo -Hiu gvm tar zxvf gvmd-$GVMD_VERSION.tar.gz
+    sudo -Hiu gvm curl -f -L https://github.com/greenbone/gsa/archive/refs/tags/v$GSA_VERSION.tar.gz -o gsa-$GSA_VERSION.tar.gz
+    sudo -Hiu gvm tar zxvf gsa-$GSA_VERSION.tar.gz
+    sudo -Hiu gvm curl -f -L https://github.com/greenbone/gsad/archive/refs/tags/v$GSAD_VERSION.tar.gz -o gsad-$GSAD_VERSION.tar.gz
+    sudo -Hiu gvm tar zxvf gsad-$GSAD_VERSION.tar.gz
+    sudo -Hiu gvm curl -f -L https://github.com/greenbone/openvas-smb/archive/refs/tags/v$OPENVAS_SMB_VERSION.tar.gz -o openvas-smb-$OPENVAS_SMB_VERSION.tar.gz
+    sudo -Hiu gvm tar zxvf openvas-smb-$OPENVAS_SMB_VERSION.tar.gz
+    sudo -Hiu gvm curl -f -L https://github.com/greenbone/openvas-scanner/archive/refs/tags/v$OPENVAS_SCANNER_VERSION.tar.gz -o openvas-scanner-$OPENVAS_SCANNER_VERSION.tar.gz
+    sudo -Hiu gvm tar zxvf openvas-scanner-$OPENVAS_SCANNER_VERSION.tar.gz
+    sudo -Hiu gvm curl -f -L https://github.com/greenbone/ospd/archive/refs/tags/v$OSPD_VERSION.tar.gz -o ospd-$OSPD_VERSION.tar.gz
+    sudo -Hiu gvm tar zxvf ospd-$OSPD_VERSION.tar.gz
+    sudo -Hiu gvm curl -f -L https://github.com/greenbone/ospd-openvas/archive/refs/tags/v$OSPD_OPENVAS_VERSION.tar.gz -o ospd-openvas-$OSPD_OPENVAS_VERSION.tar.gz
+    sudo -Hiu gvm tar zxvf ospd-openvas-$OSPD_OPENVAS_VERSION.tar.gz
+  
 fi
 
 sudo -Hiu gvm cp --recursive /opt/gvm/* /tmp/gvm-source/
@@ -190,7 +196,7 @@ sudo -Hiu gvm echo "export PKG_CONFIG_PATH=/opt/gvm/lib/pkgconfig:$PKG_CONFIG_PA
 sudo -Hiu gvm echo "cd /opt/gvm/gvm-libs" | sudo -Hiu gvm tee -a /opt/gvm/.bashrc
 sudo -Hiu gvm echo "mkdir build" | sudo -Hiu gvm tee -a /opt/gvm/.bashrc
 sudo -Hiu gvm echo "cd build" | sudo -Hiu gvm tee -a /opt/gvm/.bashrc
-sudo -Hiu gvm echo "cmake .. -DCMAKE_INSTALL_PREFIX=/opt/gvm" | sudo -Hiu gvm tee -a /opt/gvm/.bashrc
+sudo -Hiu gvm echo "cmake .. -DCMAKE_INSTALL_PREFIX=/opt/gvm -DCMAKE_BUILD_TYPE=Release -DSYSCONFDIR=/opt/gvm/etc -DLOCALSTATEDIR=/opt/gvm/var -DGVM_RUN_DIR=/opt/gvm/run/gvm" | sudo -Hiu gvm tee -a /opt/gvm/.bashrc
 sudo -Hiu gvm echo "make" | sudo -Hiu gvm tee -a /opt/gvm/.bashrc
 sudo -Hiu gvm echo "make install" | sudo -Hiu gvm tee -a /opt/gvm/.bashrc
 
@@ -259,6 +265,9 @@ else
 fi
 
 echo "gvm ALL = NOPASSWD: /opt/gvm/sbin/gsad" >> /etc/sudoers.d/gvm
+# Build and Install Greenbone Secuirty Assistant
+# we need to allow gvm user to write service files to /lib/systemd/system 
+chmod 777 /lib/systemd/system/
 
 # Build and Install Greenbone Vulnerability Manager
 su gvm -c "touch /opt/gvm/gvm_build.sh"
@@ -268,33 +277,43 @@ sudo -Hiu gvm echo "export PKG_CONFIG_PATH=/opt/gvm/lib/pkgconfig:$PKG_CONFIG_PA
 sudo -Hiu gvm echo "cd /tmp/gvm-source/gvmd" | sudo -Hiu gvm tee -a /opt/gvm/gvm_build.sh
 sudo -Hiu gvm echo "mkdir build" | sudo -Hiu gvm tee -a /opt/gvm/gvm_build.sh
 sudo -Hiu gvm echo "cd build" | sudo -Hiu gvm tee -a /opt/gvm/gvm_build.sh
-sudo -Hiu gvm echo "cmake .. -DCMAKE_INSTALL_PREFIX=/opt/gvm" | sudo -Hiu gvm tee -a /opt/gvm/gvm_build.sh
+sudo -Hiu gvm echo "cmake .. -DCMAKE_INSTALL_PREFIX=/opt/gvm -DCMAKE_BUILD_TYPE=Release -DLOCALSTATEDIR=/opt/gvm/var -DSYSCONFDIR=/opt/gvm/etc -DGVM_DATA_DIR=/opt/gvm/var -DGVMD_RUN_DIR=/opt/gvm/run/gvm -DOPENVAS_DEFAULT_SOCKET=/opt/gvm/run/ospd/ospd-openvas.sock -DGVM_FEED_LOCK_PATH=/opt/gvm/var/lib/gvm/feed-update.lock " | sudo -Hiu gvm tee -a /opt/gvm/gvm_build.sh
 sudo -Hiu gvm echo "make" | sudo -Hiu gvm tee -a /opt/gvm/gvm_build.sh
 sudo -Hiu gvm echo "make install" | sudo -Hiu gvm tee -a /opt/gvm/gvm_build.sh
 
 su gvm -c "/opt/gvm/gvm_build.sh"
 su gvm -c "rm /opt/gvm/gvm_build.sh"
 
-# Build and Install Greenbone Secuirty Assistant
+
+# Build and Install GSA
 su gvm -c "touch /opt/gvm/gsa_build.sh"
 su gvm -c "chmod u+x /opt/gvm/gsa_build.sh"
 
 sudo -Hiu gvm echo "export PKG_CONFIG_PATH=/opt/gvm/lib/pkgconfig:$PKG_CONFIG_PATH" | sudo -Hiu gvm tee -a /opt/gvm/gsa_build.sh
-sudo -Hiu gvm echo "cd /tmp/gvm-source/gsa" | sudo -Hiu gvm tee -a /opt/gvm/gsa_build.sh
-sudo -Hiu gvm echo "mkdir build" | sudo -Hiu gvm tee -a /opt/gvm/gsa_build.sh
-sudo -Hiu gvm echo "cd build" | sudo -Hiu gvm tee -a /opt/gvm/gsa_build.sh
-
-ID=`grep ^ID= /etc/os-release | sed 's/ID=//g'`
-if [[ $ID = "debian" ]] || [[ $ID = "kali" ]]; then
-    sudo -Hiu gvm echo "cmake .. -DCMAKE_INSTALL_PREFIX=/opt/gvm -DCMAKE_BUILD_TYPE=RELEASE" | sudo -Hiu gvm tee -a /opt/gvm/gsa_build.sh
-else
-    sudo -Hiu gvm echo "cmake .. -DCMAKE_INSTALL_PREFIX=/opt/gvm" | sudo -Hiu gvm tee -a /opt/gvm/gsa_build.sh
-fi
-sudo -Hiu gvm echo "make" | sudo -Hiu gvm tee -a /opt/gvm/gsa_build.sh
-sudo -Hiu gvm echo "make install" | sudo -Hiu gvm tee -a /opt/gvm/gsa_build.sh
+sudo -Hiu gvm echo "cd /tmp/gvm-source/gsa-$GSA_VERSION" | sudo -Hiu gvm tee -a /opt/gvm/gsa_build.sh
+sudo -Hiu gvm echo "yarnpkg" | sudo -Hiu gvm tee -a /opt/gvm/gsa_build.sh
+sudo -Hiu gvm echo "yarnpkg build" | sudo -Hiu gvm tee -a /opt/gvm/gsa_build.sh
+sudo -Hiu gvm echo "mkdir -p /opt/gvm/share/gvm/gsad/web/" | sudo -Hiu gvm tee -a /opt/gvm/gsa_build.sh
+sudo -Hiu gvm echo "cp -r build/* /opt/gvm/share/gvm/gsad/web/" | sudo -Hiu gvm tee -a /opt/gvm/gsa_build.sh
 
 su gvm -c "/opt/gvm/gsa_build.sh"
 su gvm -c "rm /opt/gvm/gsa_build.sh"
+
+# Build and Install GSAD
+su gvm -c "touch /opt/gvm/gsad_build.sh"
+su gvm -c "chmod u+x /opt/gvm/gsad_build.sh"
+
+sudo -Hiu gvm echo "export PKG_CONFIG_PATH=/opt/gvm/lib/pkgconfig:$PKG_CONFIG_PATH" | sudo -Hiu gvm tee -a /opt/gvm/gsad_build.sh
+sudo -Hiu gvm echo "cd /tmp/gvm-source/gsad-$GSAD_VERSION" | sudo -Hiu gvm tee -a /opt/gvm/gsad_build.sh
+sudo -Hiu gvm echo "mkdir build" | sudo -Hiu gvm tee -a /opt/gvm/gsad_build.sh
+sudo -Hiu gvm echo "cd build" | sudo -Hiu gvm tee -a /opt/gvm/gsad_build.sh
+sudo -Hiu gvm echo "cmake .. -DCMAKE_INSTALL_PREFIX=/opt/gvm -DCMAKE_BUILD_TYPE=Release -DSYSCONFDIR=/opt/gvm/etc -DLOCALSTATEDIR=/opt/gvm/var -DGVMD_RUN_DIR=/opt/gvm/run/gvm -DGSAD_RUN_DIR=/opt/gvm/run/gsad" | sudo -Hiu gvm tee -a /opt/gvm/gsad_build.sh
+sudo -Hiu gvm echo "make" | sudo -Hiu gvm tee -a /opt/gvm/gsad_build.sh
+sudo -Hiu gvm echo "make install" | sudo -Hiu gvm tee -a /opt/gvm/gsad_build.sh
+
+su gvm -c "/opt/gvm/gsad_build.sh"
+su gvm -c "rm /opt/gvm/gsad_build.sh"
+
 
 # Set cron jobs to run once daily at random times
 su gvm -c "touch /opt/gvm/cron.sh"
@@ -361,6 +380,8 @@ su gvm -c "rm /opt/gvm/ospd.sh"
 # Start OpenVAS
 su gvm -c "touch /opt/gvm/start.sh"
 su gvm -c "chmod u+x /opt/gvm/start.sh"
+
+sudo -Hiu gvm echo "mkdir /opt/gvm/var/run" | sudo -Hiu gvm tee -a /opt/gvm/start.sh
 
 PY3VER=`python3 --version | grep -o [0-9]\.[0-9]`
 sudo -Hiu gvm echo "export PYTHONPATH=/opt/gvm/lib/python$PY3VER/site-packages" | sudo -Hiu gvm tee -a /opt/gvm/start.sh
@@ -441,6 +462,9 @@ if $UFW ; then
     ufw allow 22
     ufw --force enable
 fi
+
+# Remove gvm user's permission to write service files to /lib/systemd/system 
+chmod 755 /lib/systemd/system/
 
 # Create systemd services for OpenVAS Scanner, GSA, and GVM services
 echo "[Unit]" > /etc/systemd/system/openvas.service
