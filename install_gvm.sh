@@ -109,7 +109,7 @@ apt-get -y install yarn
 /usr/bin/yarn install
 /usr/bin/yarn upgrade
 
-apt-get -y install postgresql postgresql-contrib postgresql-server-dev-all
+apt-get -y install postgresql postgresql-client postgresql-contrib postgresql-server-dev-all
 systemctl restart postgresql
 sudo -Hiu postgres createuser gvm
 sudo -Hiu postgres createdb -O gvm gvmd
