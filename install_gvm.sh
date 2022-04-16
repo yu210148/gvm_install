@@ -111,6 +111,10 @@ apt-get -y install yarn
 
 apt-get -y install postgresql postgresql-client postgresql-contrib postgresql-server-dev-all
 systemctl restart postgresql
+# sleep for a minute to let postgres restart before proceeding (Issue #73)
+echo "Sleeping for a minute to let postgres restart."
+echo "https://github.com/yu210148/gvm_install/issues/73 has more info on why we're waiting here."
+sleep 60
 sudo -Hiu postgres createuser gvm
 sudo -Hiu postgres createdb -O gvm gvmd
 sudo -Hiu postgres psql -c 'create role dba with superuser noinherit;' gvmd
