@@ -215,7 +215,7 @@ sudo -Hiu gvm touch /opt/gvm/.bashrc
 sudo -Hiu gvm echo "export PKG_CONFIG_PATH=/opt/gvm/lib/pkgconfig:$PKG_CONFIG_PATH" | sudo -Hiu gvm tee -a /opt/gvm/.bashrc
 
 # Build and Install GVM Libraries
-sudo -Hiu gvm echo "cd /opt/gvm/gvm-libs-$GVM_VERSION" | sudo -Hiu gvm tee -a /opt/gvm/.bashrc
+sudo -Hiu gvm echo "cd /opt/gvm/gvm-libs-$GVM_LIBS_VERSION" | sudo -Hiu gvm tee -a /opt/gvm/.bashrc
 sudo -Hiu gvm echo "mkdir build" | sudo -Hiu gvm tee -a /opt/gvm/.bashrc
 sudo -Hiu gvm echo "cd build" | sudo -Hiu gvm tee -a /opt/gvm/.bashrc
 
