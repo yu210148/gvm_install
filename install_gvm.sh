@@ -96,7 +96,7 @@ else
     exit 1
 fi
 
-TMP_IS_MOUNTED=$(sudo df |grep /tmp$|wc -l)
+TMP_IS_MOUNTED=$(df |grep /tmp$|wc -l)
 
 if [ $TMP_IS_MOUNTED -eq 0 ]; then
 	echo "Re-mounting partition /tmp"
