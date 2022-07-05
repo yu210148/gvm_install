@@ -96,6 +96,15 @@ else
     exit 1
 fi
 
+TMP_IS_MOUNTED=$(sudo df |grep /tmp$|wc -l)
+
+if [ $TMP_IS_MOUNTED -eq 0 ]; then
+	echo "Re-mounting partition /tmp"
+	sleep 3
+	sudo mount -o remount,defaults /tmp
+	echo "After installation, check if your partition /tmp is mounted correctly"
+fi
+
 apt-get update
 apt-get upgrade -y 
 useradd -r -d /opt/gvm -c "GVM (OpenVAS) User" -s /bin/bash gvm
