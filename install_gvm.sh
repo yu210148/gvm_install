@@ -622,14 +622,10 @@ fi
 # Update data from the feed servers
 ##############################################################################
 #update NVT feed
-su gvm -c /opt/gvm/bin/greenbone-nvt-sync
-/opt/gvm/sbin/openvas --update-vt-info
+su gvm -c "/opt/gvm/bin/greenbone-nvt-sync"
+su gvm -c "/opt/gvm/sbin/openvas --update-vt-info"
 # give the db a chance to update
 echo "Sleeping for 5 minutes to let the DB finish the NVT update"
-sleep 300
-# update GVMD_DATA
-su gvm -c "/opt/gvm/sbin/greenbone-feed-sync --type GVMD_DATA"
-echo "Sleeping for 5 minutes to let the DB finish the GVMD_DATA update"
 sleep 300
 # update SCAP
 su gvm -c "/opt/gvm/sbin/greenbone-feed-sync --type SCAP"
@@ -638,6 +634,10 @@ sleep 300
 # update CERT
 su gvm -c "/opt/gvm/sbin/greenbone-feed-sync --type CERT"
 echo "Sleeping for 5 minutes to let the DB finish the CERT update"
+sleep 300
+# update GVMD_DATA
+su gvm -c "/opt/gvm/sbin/greenbone-feed-sync --type GVMD_DATA"
+echo "Sleeping for 5 minutes to let the DB finish the GVMD_DATA update"
 sleep 300
 ############################################################################
 
