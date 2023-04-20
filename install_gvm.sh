@@ -25,13 +25,13 @@ gvm_shell="$cat /etc/passwd | grep gvm | cut -f7 -d:"
 ###################################
 print_help () {
     printf "options:\n"
-    printf "    -v | --version -- supported versions are 20|21\n"
+    printf "    -v | --version -- supported versions are 20|21|22\n"
     printf "    -a | --api  -- Install and configure gsa api\n"
     printf "    -u | --ufw  -- enable ufw and open ports 22,443\n"
     printf "    -h | --help -- displays this\n"
 
     printf "\nexamples:\n"
-    printf "    ${0} -v 21\n"
+    printf "    ${0} -v 22\n"
 
     exit 1
 }
@@ -88,7 +88,7 @@ then
   print_help
 fi
 
-if [[ $GVMVERSION = "21" ]] || [[ $GVMVERSION = "20" ]]; then
+if [[ $GVMVERSION = "22" ]] || [[ $GVMVERSION = "21" ]] || [[ $GVMVERSION = "20" ]]; then
     echo "Okay, installing version $GVMVERSION"
 else 
     echo "Sorry, I didn't understand the input $GVMVERSION."
@@ -114,7 +114,7 @@ then
 fi
 mkdir /opt/gvm
 chown gvm:gvm /opt/gvm
-apt-get -y install gcc g++ make bison flex libksba-dev curl redis libpcap-dev cmake git pkg-config libglib2.0-dev libgpgme-dev libgnutls28-dev uuid-dev libssh-gcrypt-dev libldap2-dev gnutls-bin libmicrohttpd-dev libhiredis-dev zlib1g-dev libxml2 libxml2-dev libradcli-dev clang-format libldap2-dev doxygen nmap gcc-mingw-w64 xml-twig-tools libical-dev perl-base heimdal-dev libpopt-dev libsnmp-dev python3-setuptools python3-paramiko python3-lxml python3-defusedxml python3-dev gettext python3-polib xmltoman python3-pip texlive-fonts-recommended xsltproc texlive-latex-extra rsync ufw ntp libunistring-dev git libnet1-dev graphviz graphviz-dev nsis --no-install-recommends
+apt-get -y install gcc g++ make bison flex libksba-dev curl redis libpcap-dev cmake git pkg-config libglib2.0-dev libgpgme-dev libgnutls28-dev uuid-dev libssh-gcrypt-dev libldap2-dev gnutls-bin libmicrohttpd-dev libhiredis-dev zlib1g-dev libpaho-mqtt-dev libjson-glib-dev libbsd-dev libxml2 libxml2-dev libradcli-dev clang-format libldap2-dev doxygen nmap gcc-mingw-w64 xml-twig-tools libical-dev perl-base heimdal-dev libpopt-dev libsnmp-dev python3-setuptools python3-paramiko python3-lxml python3-defusedxml python3-dev gettext python3-polib xmltoman python3-pip texlive-fonts-recommended xsltproc texlive-latex-extra rsync ufw ntp libunistring-dev git libnet1-dev graphviz graphviz-dev nsis --no-install-recommends
 curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
 echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
 apt-get update
@@ -177,6 +177,36 @@ elif [ $GVMVERSION = "21" ]; then
     export OSPD_OPENVAS_VERSION=$GVM_VERSION
 
     export GSAD_VERSION=$GVM_VERSION
+    sudo -Hiu gvm curl -f -L https://github.com/greenbone/gvm-libs/archive/refs/tags/v$GVM_LIBS_VERSION.tar.gz -o gvm-libs-$GVM_LIBS_VERSION.tar.gz
+    sudo -Hiu gvm tar zxvf gvm-libs-$GVM_LIBS_VERSION.tar.gz
+    sudo -Hiu gvm curl -f -L https://github.com/greenbone/gvmd/archive/refs/tags/v$GVMD_VERSION.tar.gz -o gvmd-$GVMD_VERSION.tar.gz
+    sudo -Hiu gvm tar zxvf gvmd-$GVMD_VERSION.tar.gz
+    sudo -Hiu gvm curl -f -L https://github.com/greenbone/gsa/archive/refs/tags/v$GSA_VERSION.tar.gz -o gsa-$GSA_VERSION.tar.gz
+    sudo -Hiu gvm tar zxvf gsa-$GSA_VERSION.tar.gz
+    sudo -Hiu gvm curl -f -L https://github.com/greenbone/gsad/archive/refs/tags/v$GSAD_VERSION.tar.gz -o gsad-$GSAD_VERSION.tar.gz
+    sudo -Hiu gvm tar zxvf gsad-$GSAD_VERSION.tar.gz
+    sudo -Hiu gvm curl -f -L https://github.com/greenbone/openvas-smb/archive/refs/tags/v$OPENVAS_SMB_VERSION.tar.gz -o openvas-smb-$OPENVAS_SMB_VERSION.tar.gz
+    sudo -Hiu gvm tar zxvf openvas-smb-$OPENVAS_SMB_VERSION.tar.gz
+    sudo -Hiu gvm curl -f -L https://github.com/greenbone/openvas-scanner/archive/refs/tags/v$OPENVAS_SCANNER_VERSION.tar.gz -o openvas-scanner-$OPENVAS_SCANNER_VERSION.tar.gz
+    sudo -Hiu gvm tar zxvf openvas-scanner-$OPENVAS_SCANNER_VERSION.tar.gz
+    sudo -Hiu gvm curl -f -L https://github.com/greenbone/ospd/archive/refs/tags/v$OSPD_VERSION.tar.gz -o ospd-$OSPD_VERSION.tar.gz
+    sudo -Hiu gvm tar zxvf ospd-$OSPD_VERSION.tar.gz
+    sudo -Hiu gvm curl -f -L https://github.com/greenbone/ospd-openvas/archive/refs/tags/v$OSPD_OPENVAS_VERSION.tar.gz -o ospd-openvas-$OSPD_OPENVAS_VERSION.tar.gz
+    sudo -Hiu gvm tar zxvf ospd-openvas-$OSPD_OPENVAS_VERSION.tar.gz
+
+elif [ $GVMVERSION = "22" ]; then
+
+    export GVM_VERSION=22.4.4
+    export GVM_LIBS_VERSION=$GVM_VERSION
+    export GVMD_VERSION=22.4.2
+
+    export GSA_VERSION=22.4.1
+    export GSAD_VERSION=22.4.1
+    export OPENVAS_SMB_VERSION=22.4.0
+    export OPENVAS_SCANNER_VERSION=22.4.1
+    export OSPD_VERSION=21.4.4
+    export OSPD_OPENVAS_VERSION=22.4.6
+
     sudo -Hiu gvm curl -f -L https://github.com/greenbone/gvm-libs/archive/refs/tags/v$GVM_LIBS_VERSION.tar.gz -o gvm-libs-$GVM_LIBS_VERSION.tar.gz
     sudo -Hiu gvm tar zxvf gvm-libs-$GVM_LIBS_VERSION.tar.gz
     sudo -Hiu gvm curl -f -L https://github.com/greenbone/gvmd/archive/refs/tags/v$GVMD_VERSION.tar.gz -o gvmd-$GVMD_VERSION.tar.gz
@@ -303,7 +333,7 @@ sudo -Hiu gvm echo "cd /tmp/gvm-source/gvmd-$GVMD_VERSION" | sudo -Hiu gvm tee -
 sudo -Hiu gvm echo "mkdir build" | sudo -Hiu gvm tee -a /opt/gvm/gvm_build.sh
 sudo -Hiu gvm echo "cd build" | sudo -Hiu gvm tee -a /opt/gvm/gvm_build.sh
 
-sudo -Hiu gvm echo "cmake .. -DCMAKE_INSTALL_PREFIX=/opt/gvm -DCMAKE_BUILD_TYPE=Release -DLOCALSTATEDIR=/opt/gvm/var -DSYSCONFDIR=/opt/gvm/etc -DGVM_DATA_DIR=/opt/gvm/var -DGVMD_RUN_DIR=/opt/gvm/run/gvm -DOPENVAS_DEFAULT_SOCKET=/opt/gvm/run/ospd/ospd-openvas.sock -DGVM_FEED_LOCK_PATH=/opt/gvm/var/lib/gvm/feed-update.lock " | sudo -Hiu gvm tee -a /opt/gvm/gvm_build.sh
+sudo -Hiu gvm echo "cmake .. -DCMAKE_INSTALL_PREFIX=/opt/gvm -DCMAKE_BUILD_TYPE=Release -DLOCALSTATEDIR=/opt/gvm/var -DSYSCONFDIR=/opt/gvm/etc -DGVM_DATA_DIR=/opt/gvm/var -DGVMD_RUN_DIR=/opt/gvm/run/gvm -DOPENVAS_DEFAULT_SOCKET=/opt/gvm/run/ospd/ospd-openvas.sock -DGVM_FEED_LOCK_PATH=/opt/gvm/var/lib/gvm/feed-update.lock -DPostgreSQL_ADDITIONAL_VERSIONS=14" | sudo -Hiu gvm tee -a /opt/gvm/gvm_build.sh
 
 sudo -Hiu gvm echo "make" | sudo -Hiu gvm tee -a /opt/gvm/gvm_build.sh
 sudo -Hiu gvm echo "make install" | sudo -Hiu gvm tee -a /opt/gvm/gvm_build.sh
@@ -636,7 +666,7 @@ sleep 300
 echo "The installation is done, but there may still be an update in progress."
 echo "Please be patient if you aren't able to log in at first."
 echo "You may also need to restart"
-if [ $GVMVERSION = "20" ] || [ $GVMVERSION = "21" ]; then
+if [ $GVMVERSION = "20" ] || [ $GVMVERSION = "21" ] || [ $GVMVERSION = "22" ]; then
     echo ""
     echo "If you're unable to log in to the web interface try restarting"
     echo "and running all of the update commands in the gvm user's crontab"
