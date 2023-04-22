@@ -341,7 +341,8 @@ sudo -Hiu gvm echo "make install" | sudo -Hiu gvm tee -a /opt/gvm/gvm_build.sh
 su gvm -c "/opt/gvm/gvm_build.sh"
 su gvm -c "rm /opt/gvm/gvm_build.sh"
 
-
+#debug
+#exit
 
 # Build and Install GSA
 
@@ -351,7 +352,13 @@ su gvm -c "chmod u+x /opt/gvm/gsa_build.sh"
 sudo -Hiu gvm echo "export PKG_CONFIG_PATH=/opt/gvm/lib/pkgconfig:$PKG_CONFIG_PATH" | sudo -Hiu gvm tee -a /opt/gvm/gsa_build.sh
 sudo -Hiu gvm echo "cd /tmp/gvm-source/gsa-$GSA_VERSION" | sudo -Hiu gvm tee -a /opt/gvm/gsa_build.sh
 
-sudo -Hiu gvm echo "yarnpkg" | sudo -Hiu gvm tee -a /opt/gvm/gsa_build.sh
+#TODO the below line is erroring with:
+# yarn install v1.22.19
+#[1/5] Validating package.json...
+#error gsa@22.4.1: The engine "node" is incompatible with this module. Expected version ">=14.0". Got "12.22.9"
+#error Found incompatible module.
+
+sudo -Hiu gvm echo "yarnpkg" | sudo -Hiu gvm tee -a /opt/gvm/gsa_build.sh # this line is erroring
 sudo -Hiu gvm echo "yarnpkg build" | sudo -Hiu gvm tee -a /opt/gvm/gsa_build.sh
 sudo -Hiu gvm echo "mkdir -p /opt/gvm/share/gvm/gsad/web/" | sudo -Hiu gvm tee -a /opt/gvm/gsa_build.sh
 sudo -Hiu gvm echo "cp -r build/* /opt/gvm/share/gvm/gsad/web/" | sudo -Hiu gvm tee -a /opt/gvm/gsa_build.sh
