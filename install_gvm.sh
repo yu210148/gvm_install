@@ -342,7 +342,7 @@ su gvm -c "/opt/gvm/gvm_build.sh"
 su gvm -c "rm /opt/gvm/gvm_build.sh"
 
 #debug
-#exit
+exit
 
 # Build and Install GSA
 
