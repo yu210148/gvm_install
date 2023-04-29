@@ -349,13 +349,13 @@ su gvm -c "chmod u+x /opt/gvm/gsa_build.sh"
 sudo -Hiu gvm echo "export PKG_CONFIG_PATH=/opt/gvm/lib/pkgconfig:$PKG_CONFIG_PATH" | sudo -Hiu gvm tee -a /opt/gvm/gsa_build.sh
 sudo -Hiu gvm echo "cd /tmp/gvm-source/gsa-$GSA_VERSION" | sudo -Hiu gvm tee -a /opt/gvm/gsa_build.sh
 
-#TODO the below line is erroring with:
+# the below line is erroring with:
 # yarn install v1.22.19
 #[1/5] Validating package.json...
 #error gsa@22.4.1: The engine "node" is incompatible with this module. Expected version ">=14.0". Got "12.22.9"
 #error Found incompatible module.
 
-# Let's try installing nvm and getting the version of the engine that it's looking for
+# Let's try installing nvm and getting the version of the engine that it's looking for (see issue95 on github)
 sudo -Hiu gvm echo "curl https://raw.githubusercontent.com/creationix/nvm/master/install.sh | bash" | sudo -Hiu gvm tee -a /opt/gvm/gsa_build.sh
 sudo -Hiu gvm echo "source ~/.bashrc" | sudo -Hiu gvm tee -a /opt/gvm/gsa_build.sh
 sudo -Hiu gvm echo "nvm install 14.21.3" | sudo -Hiu gvm tee -a /opt/gvm/gsa_build.sh
@@ -369,9 +369,6 @@ sudo -Hiu gvm echo "cp -r build/* /opt/gvm/share/gvm/gsad/web/" | sudo -Hiu gvm 
 
 su gvm -c "/opt/gvm/gsa_build.sh"
 su gvm -c "rm /opt/gvm/gsa_build.sh"
-
-#debug
-exit
 
 # Build and Install GSAD
 su gvm -c "touch /opt/gvm/gsad_build.sh"
