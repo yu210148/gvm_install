@@ -341,9 +341,6 @@ sudo -Hiu gvm echo "make install" | sudo -Hiu gvm tee -a /opt/gvm/gvm_build.sh
 su gvm -c "/opt/gvm/gvm_build.sh"
 su gvm -c "rm /opt/gvm/gvm_build.sh"
 
-#debug
-exit
-
 # Build and Install GSA
 
 su gvm -c "touch /opt/gvm/gsa_build.sh"
@@ -358,6 +355,12 @@ sudo -Hiu gvm echo "cd /tmp/gvm-source/gsa-$GSA_VERSION" | sudo -Hiu gvm tee -a 
 #error gsa@22.4.1: The engine "node" is incompatible with this module. Expected version ">=14.0". Got "12.22.9"
 #error Found incompatible module.
 
+# Let's try installing nvm and getting the version of the engine that it's looking for
+sudo -Hiu gvm echo "curl https://raw.githubusercontent.com/creationix/nvm/master/install.sh | bash" | sudo -Hiu gvm tee -a /opt/gvm/gsa_build.sh
+sudo -Hiu gvm echo "source ~/.bashrc" | sudo -Hiu gvm tee -a /opt/gvm/gsa_build.sh
+sudo -Hiu gvm echo "nvm install 14.21.3" | sudo -Hiu gvm tee -a /opt/gvm/gsa_build.sh
+sudo -Hiu gvm echo "nvm use 14.21.3" | sudo -Hiu gvm tee -a /opt/gvm/gsa_build.sh
+
 sudo -Hiu gvm echo "yarnpkg" | sudo -Hiu gvm tee -a /opt/gvm/gsa_build.sh # this line is erroring
 sudo -Hiu gvm echo "yarnpkg build" | sudo -Hiu gvm tee -a /opt/gvm/gsa_build.sh
 sudo -Hiu gvm echo "mkdir -p /opt/gvm/share/gvm/gsad/web/" | sudo -Hiu gvm tee -a /opt/gvm/gsa_build.sh
@@ -366,6 +369,9 @@ sudo -Hiu gvm echo "cp -r build/* /opt/gvm/share/gvm/gsad/web/" | sudo -Hiu gvm 
 
 su gvm -c "/opt/gvm/gsa_build.sh"
 su gvm -c "rm /opt/gvm/gsa_build.sh"
+
+#debug
+exit
 
 # Build and Install GSAD
 su gvm -c "touch /opt/gvm/gsad_build.sh"
