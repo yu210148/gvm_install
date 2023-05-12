@@ -344,6 +344,26 @@ sudo -Hiu gvm echo "make install" | sudo -Hiu gvm tee -a /opt/gvm/gvm_build.sh
 su gvm -c "/opt/gvm/gvm_build.sh"
 su gvm -c "rm /opt/gvm/gvm_build.sh"
 
+# Build and Install pg-gvm if using version 22 or higher
+#TODO insert code here to do this
+if [ $GVMVERSION = "22" ]; then
+    su gvm -c "touch /opt/gvm/pg-gvm_build.sh"
+    su gvm -c "chmod u+x /opt/gvm/pg-gvm_build.sh"
+    
+    sudo -Hiu gvm echo "export PKG_CONFIG_PATH=/opt/gvm/lib/pkgconfig:$PKG_CONFIG_PATH" | sudo -Hiu gvm tee -a /opt/gvm/pg-gvm_build.sh
+    sudo -Hiu gvm echo "cd /tmp/gvm-source/pg-gvm-$PG_GVM_VERSION" | sudo -Hiu gvm tee -a /opt/gvm/pg-gvm_build.sh
+    
+    #mkdir -p $BUILD_DIR/pg-gvm && cd $BUILD_DIR/pg-gvm
+
+    sudo -Hiu gvm echo "cmake pg-gvm-$PG_GVM_VERSION -DCMAKE_BUILD_TYPE=Release -DPostgreSQL_TYPE_INCLUDE_DIR=/usr/include/postgresql" | sudo -Hiu gvm tee -a /opt/gvm/pg-gvm_build.sh
+
+    sudo -Hiu gvm echo "make -j$(nproc)" | sudo -Hiu gvm tee -a /opt/gvm/pg-gvm_build.sh
+    
+    #TODO code install of pg-gvm
+    
+fi
+
+
 # Build and Install GSA
 
 su gvm -c "touch /opt/gvm/gsa_build.sh"
