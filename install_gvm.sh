@@ -124,7 +124,7 @@ apt-get -y install yarn
 /usr/bin/yarn install
 /usr/bin/yarn upgrade
 
-apt-get -y install postgresql postgresql-client postgresql-contrib postgresql-server-dev-all
+apt-get -y install postgresql postgresql-client postgresql-contrib postgresql-server-dev-all libglib2.0-dev
 systemctl restart postgresql
 # sleep for a minute to let postgres restart before proceeding (Issue #73)
 echo "Sleeping for a minute to let postgres restart."
@@ -206,6 +206,7 @@ elif [ $GVMVERSION = "22" ]; then
     export OPENVAS_SCANNER_VERSION=22.4.1
     export OSPD_VERSION=21.4.4
     export OSPD_OPENVAS_VERSION=22.4.6
+    export PG_GVM_VERSION=22.4.0
 
     sudo -Hiu gvm curl -f -L https://github.com/greenbone/gvm-libs/archive/refs/tags/v$GVM_LIBS_VERSION.tar.gz -o gvm-libs-$GVM_LIBS_VERSION.tar.gz
     sudo -Hiu gvm tar zxvf gvm-libs-$GVM_LIBS_VERSION.tar.gz
@@ -223,6 +224,8 @@ elif [ $GVMVERSION = "22" ]; then
     sudo -Hiu gvm tar zxvf ospd-$OSPD_VERSION.tar.gz
     sudo -Hiu gvm curl -f -L https://github.com/greenbone/ospd-openvas/archive/refs/tags/v$OSPD_OPENVAS_VERSION.tar.gz -o ospd-openvas-$OSPD_OPENVAS_VERSION.tar.gz
     sudo -Hiu gvm tar zxvf ospd-openvas-$OSPD_OPENVAS_VERSION.tar.gz
+    sudo -Hiu gvm curl -f -L https://github.com/greenbone/pg-gvm/archive/refs/tags/v$PG_GVM_VERSION.tar.gz -o pg-gvm-$PG_GVM_VERSION.tar.gz
+    sudo -Hiu gvm tar zxvf pg-gvm-$PG_GVM_VERSION.tar.gz
 
 fi
 
