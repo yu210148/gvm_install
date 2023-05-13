@@ -359,7 +359,7 @@ if [ $GVMVERSION = "22" ]; then
     sudo -Hiu gvm echo "make -j$(nproc)" | sudo -Hiu gvm tee -a /opt/gvm/pg-gvm_build.sh
     
     #install of pg-gvm
-    sudo -Hiu gvm echo "make DESTDIR=/opt/gvm/pg-gvm install" | sudo -Hiu gvm tee -a /opt/gvm/pg-gvm_build.sh
+    sudo -Hiu gvm echo "make DESTDIR=/opt/gvm/pg-gvm-22.4.0 install" | sudo -Hiu gvm tee -a /opt/gvm/pg-gvm_build.sh
     sudo -Hiu gvm echo "sudo cp -rv /opt/gvm/pg-gvm/* /" | sudo -Hiu gvm tee -a /opt/gvm/pg-gvm_build.sh # not sure about this line; possibly a FIXME
 
     # run the above as gvm user
