@@ -354,7 +354,7 @@ if [ $GVMVERSION = "22" ]; then
     sudo -Hiu gvm echo "export PKG_CONFIG_PATH=/opt/gvm/lib/pkgconfig:$PKG_CONFIG_PATH" | sudo -Hiu gvm tee -a /opt/gvm/pg-gvm_build.sh
     sudo -Hiu gvm echo "cd /tmp/gvm-source/pg-gvm-$PG_GVM_VERSION" | sudo -Hiu gvm tee -a /opt/gvm/pg-gvm_build.sh
 
-    # build
+    # build FIXME the below is not working right
     sudo -Hiu gvm echo "cmake pg-gvm-$PG_GVM_VERSION -DCMAKE_BUILD_TYPE=Release -DPostgreSQL_TYPE_INCLUDE_DIR=/usr/include/postgresql" | sudo -Hiu gvm tee -a /opt/gvm/pg-gvm_build.sh
     sudo -Hiu gvm echo "make -j$(nproc)" | sudo -Hiu gvm tee -a /opt/gvm/pg-gvm_build.sh
     
