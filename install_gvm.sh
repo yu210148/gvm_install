@@ -95,6 +95,7 @@ if [[ $GVMVERSION = "22" ]] || [[ $GVMVERSION = "21" ]] || [[ $GVMVERSION = "20"
         exit
     else
         echo "Okay, installing version $GVMVERSION"
+    fi
 else 
     echo "Sorry, I didn't understand the input $GVMVERSION."
     echo "Please re-run install_gvm.sh and enter a version number at the prompt"
