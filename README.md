@@ -1,7 +1,7 @@
 # gvm_install
 A script to install GVM 20 / 21 on Ubuntu 20.04
 
-* Please Note: this script installs a now end-of-life version of GVM and I'm not sure when I'll get a chance to try to update it. If anyone can update it for the latest GVM version(s) I'd be happy to merge that pull-request.
+* Please Note: this script is now end-of-life. Please see https://github.com/itiligent/GVM-Install for a more up-to-date one.
 
 Usage:
 
